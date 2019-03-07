@@ -16,3 +16,25 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+/**
+ * @var $api \Dingo\Api\Routing\Router
+ */
+$api = app('Dingo\Api\Routing\Router');
+$api->version('v1', [
+    'middleware' => [
+        'api.throttle',
+    ],
+    'limit'     => config('api.throttle.limit'),
+    'expires'   => config('api.throttle.expires'),
+    'namespace' => 'App\\Http\\Controllers\\Api',
+], function ($api) {
+    $api->group([
+        'prefix' => 'auth',
+    ], function ($api) {
+        $api->post('login', 'AuthController@login');
+        $api->post('logout', 'AuthController@logout');
+        $api->post('refresh', 'AuthController@refresh');
+        $api->post('me', 'AuthController@me');
+    });
+});
