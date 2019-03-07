@@ -37,4 +37,19 @@ $api->version('v1', [
         $api->post('refresh', 'AuthController@refresh');
         $api->post('me', 'AuthController@me');
     });
+
+    // 后台
+    $api->group([
+        'prefix' => 'admin',
+        'namespace' => 'Admin',
+    ], function ($api) {
+        $api->group([
+            'prefix' => 'auth',
+        ], function ($api) {
+            $api->post('login', 'AuthController@login');
+            $api->post('logout', 'AuthController@logout');
+            $api->post('refresh', 'AuthController@refresh');
+            $api->post('me', 'AuthController@me');
+        });
+    });
 });

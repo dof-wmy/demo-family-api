@@ -3,18 +3,15 @@
 namespace App\Models;
 
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Notifications\Notifiable;
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Str;
 
-class User extends Authenticatable implements JWTSubject
+class AdminUser extends Authenticatable implements JWTSubject
 {
-    use Notifiable;
     use HasRoles;
 
-    protected $guard_name = 'user';
+    protected $guard_name = 'admin_user';
 
     /**
      * The attributes that are mass assignable.
@@ -22,7 +19,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'username', 'email', 'mobile', 'password', 'name',
+        'username', 'password', 'name',
     ];
 
     /**
@@ -32,15 +29,6 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $hidden = [
         'password', 'remember_token',
-    ];
-
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
     ];
 
     public function getGuardNameAttribute(){
@@ -76,7 +64,10 @@ class User extends Authenticatable implements JWTSubject
         ];
     }
 
-    static function generateUserName(){
-        return config('prefix.user') . Str::uuid();
+    static function fieldExist($fieldValue = '', $fieldName = 'username'){
+        $model = new self();
+        return self::where($fieldName, $fieldValue)->first([
+            $model->primaryKey,
+        ]) ? true : false;
     }
 }

@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Admin;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Api\Admin\AdminController;
 
-class AuthController extends ApiController
+class AuthController extends AdminController
 {
     /**
      * Create a new AuthController instance.
@@ -24,7 +23,7 @@ class AuthController extends ApiController
      */
     public function login()
     {
-        $credentials = request(['email', 'password']);
+        $credentials = request(['username', 'password']);
 
         if (! $token = auth($this->guard_name)->attempt($credentials)) {
             return $this->response->errorUnauthorized();
