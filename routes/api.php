@@ -51,6 +51,7 @@ $api->version('v1', [
             $api->post('logout', 'AuthController@logout');
             $api->post('refresh', 'AuthController@refresh');
             $api->post('me', 'AuthController@me');
+            $api->post('me/update', 'AuthController@updateMe');
         });
     });
 });

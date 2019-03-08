@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Api\Admin\AdminController;
+use App\Http\Requests\Admin\PostUpdateMeRequest;
 
 class AuthController extends AdminController
 {
@@ -65,6 +66,24 @@ class AuthController extends AdminController
     public function refresh()
     {
         return $this->respondWithToken(auth($this->guard_name)->refresh());
+    }
+
+    public function updateMe(PostUpdateMeRequest $request)
+    {
+        $user = auth($this->guard_name)->user();
+        foreach([
+            'username',
+            'name',
+            'password',
+        ] as $field){
+            if($request->$field){
+                $user->$field = $request->$field;
+            }
+        }
+        $user->save();
+        return $this->response->array([
+            'success_message' => '更新成功',
+        ]);
     }
 
     /**
