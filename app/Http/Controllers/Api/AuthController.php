@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use App\Models\User;
+use App\Models\WechatUser;
+
 class AuthController extends ApiController
 {
     /**
@@ -14,7 +17,12 @@ class AuthController extends ApiController
      */
     public function __construct()
     {
-        $this->middleware('api.auth', ['except' => ['login']]);
+        $this->middleware('api.auth', [
+            'except' => [
+                'login',
+                'loginByWechat',
+            ],
+        ]);
     }
 
     /**
@@ -31,6 +39,53 @@ class AuthController extends ApiController
         }
 
         return $this->respondWithToken($token);
+    }
+
+    public function loginByWechat(Request $request){
+        try{
+            $mockOpenid = $request->mock_openid;
+            if($mockOpenid && in_array($mockOpenid, config('wechat.mock_openids'))){
+                $wechatUser = WechatUser::where('openid', $mockOpenid)->first();
+            }
+            if(empty($wechatUser)){
+                $code = $request->code;
+                if(empty($code)){
+                    return $this->response->errorUnauthorized('code不能为空');
+                }
+                $wechatUser = WechatUser::firstByRequest($request);
+            }
+            $user = $wechatUser->user()->first();
+            if(empty($user)){
+                $create = true;
+                if($create){
+                    $user = $wechatUser->createUser();
+                }else{
+                    // TODO 要求绑定 || 绑定操作
+                    return $this->response->errorUnauthorized('敬请期待...');
+                }
+            }else{
+                $force = false;
+                $wechatUser->updateFromWechat($force);
+            }
+        }catch(\Exception $e){
+            $exceptionCode = $e->getCode();
+            $exceptionMessage = $e->getMessage();
+            $errorLog = implode("\n======", [
+                "loginByWechat 异常",
+                "exceptionCode: {$exceptionCode}",
+                "exceptionMessage: {$exceptionMessage}",
+                (string) $e,
+            ]);
+            logger()->error($errorLog);
+            // return $this->response->error((config('app.debug') ? $errorLog : '登录异常'), 401);
+            return $this->response->errorUnauthorized((config('app.debug') ? $errorLog : '登录异常'));
+        }
+
+        if(!empty($user)){
+            return $this->respondWithToken(auth($this->guard_name)->login($user));
+        }else{
+            return $this->response->errorUnauthorized('登录失败');
+        }
     }
 
     /**

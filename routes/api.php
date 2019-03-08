@@ -33,6 +33,7 @@ $api->version('v1', [
         'prefix' => 'auth',
     ], function ($api) {
         $api->post('login', 'AuthController@login');
+        $api->post('wechat_login', 'AuthController@loginByWechat');
         $api->post('logout', 'AuthController@logout');
         $api->post('refresh', 'AuthController@refresh');
         $api->post('me', 'AuthController@me');

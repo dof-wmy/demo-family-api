@@ -22,7 +22,13 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'username', 'email', 'mobile', 'password', 'name',
+        'username',
+        'register_source_id',
+        'register_source_type',
+        'email',
+        'mobile',
+        'password',
+        'name',
     ];
 
     /**
@@ -51,6 +57,18 @@ class User extends Authenticatable implements JWTSubject
         $this->attributes['password'] = bcrypt(trim($value));
     }
 
+    /**
+     * 获得用户注册来源的模型。
+     */
+    public function register_source()
+    {
+        return $this->morphTo();
+    }
+    public function registerSource()
+    {
+        return $this->register_source();
+    }
+
     // Rest omitted for brevity
 
     /**
@@ -76,7 +94,10 @@ class User extends Authenticatable implements JWTSubject
         ];
     }
 
-    static function generateUserName(){
-        return config('prefix.user') . Str::uuid();
+    static function generateUserName($prefix = ''){
+        $username = config('prefix.user');
+        $username .= $prefix ?: '';
+        $username .= Str::uuid();
+        return $username;
     }
 }
