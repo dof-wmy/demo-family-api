@@ -41,6 +41,7 @@ return [
                 '.log',
             ]))),
         ],
+        'app_type' => env('WECHAT_APP_TYPE', 'official_account'),
     ],
 
     /*

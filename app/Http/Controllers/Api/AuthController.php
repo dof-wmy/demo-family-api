@@ -54,18 +54,37 @@ class AuthController extends ApiController
                 }
                 $wechatUser = WechatUser::firstByRequest($request);
             }
-            $user = $wechatUser->user()->first();
-            if(empty($user)){
-                $create = true;
-                if($create){
-                    $user = $wechatUser->createUser();
-                }else{
-                    // TODO 要求绑定 || 绑定操作
-                    return $this->response->errorUnauthorized('敬请期待...');
+            if(!blank($wechatUser)){
+                $user = $wechatUser->user()->first();
+                if(empty($user)){
+                    $create = true;
+                    if($create){
+                        $user = $wechatUser->createUser();
+                    }else{
+                        // TODO 要求绑定 || 绑定操作
+                        return $this->response->errorUnauthorized('敬请期待...');
+                    }
                 }
-            }else{
+                // 更新微信用户信息
                 $force = false;
-                $wechatUser->updateFromWechat($force);
+                $wechatUserDetail = null;
+                if($wechatUser->app_type == 'mini_program'){
+                    if($request->has('user_info')){
+                        $userInfo = $request->user_info;
+                        $userInfo = json_decode($userInfo, true);
+                        $force = true;
+                        $wechatUserDetail = $wechatUser->detail;
+                        if($avatarUrl = array_get($userInfo, 'avatarUrl')){
+                            $wechatUserDetail['headimgurl'] = $avatarUrl;
+                        }
+                        if($nickName = array_get($userInfo, 'nickName')){
+                            $wechatUserDetail['nickname'] = $nickName;
+                        }
+                    }
+                }else{
+                    // 
+                }
+                $wechatUser->updateFromWechat($force, $wechatUserDetail);
             }
         }catch(\Exception $e){
             $exceptionCode = $e->getCode();
