@@ -40,9 +40,17 @@ class AuthController extends AdminController
      */
     public function me()
     {
-        return $this->response->array(auth($this->guard_name)->user()->only([
-            'username',
-            'name',
+        $user = auth($this->guard_name)->user();
+        return $this->response->array(array_merge(
+            $user->only([
+                'username',
+                'name',
+            ]), [
+            'can' => [
+                'get_admin_user'    => $user->can('get_admin_user'),
+                'post_admin_user'   => $user->can('post_admin_user'),
+                'delete_admin_user' => $user->can('delete_admin_user'),
+            ],
         ]));
     }
 
@@ -81,9 +89,7 @@ class AuthController extends AdminController
             }
         }
         $user->save();
-        return $this->response->array([
-            'success_message' => '更新成功',
-        ]);
+        return $this->successMessage('更新成功');
     }
 
     /**

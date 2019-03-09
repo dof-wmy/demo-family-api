@@ -14,10 +14,20 @@ php artisan jwt:secret
 
 php artisan migrate
 
-### 新建管理员
+### 后台：新增超级管理员角色
+
+php artisan permission:create-role super-admin admin_user
+
+### 后台：新增权限
+
+php artisan permission:create-permission get_admin_user admin_user
+php artisan permission:create-permission post_admin_user admin_user
+php artisan permission:create-permission delete_admin_user admin_user
+
+### 后台：新建管理员
 
 php artisan admin_user new
 
-### 新增超级管理员角色
+### 后台：管理员分配角色
 
-php artisan permission:create-role super-admin admin_user
+php artisan admin_user role

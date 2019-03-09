@@ -53,5 +53,9 @@ $api->version('v1', [
             $api->post('me', 'AuthController@me');
             $api->post('me/update', 'AuthController@updateMe');
         });
+
+        $api->get('admin_users', 'AdminUserController@index');
+        $api->post('admin_users/{id?}', 'AdminUserController@saveAdminUser');
+        $api->delete('admin_users', 'AdminUserController@deleteAdminUser');
     });
 });

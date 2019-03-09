@@ -6,10 +6,7 @@ use Illuminate\Validation\Rule;
 
 class PostUpdateMeRequest extends AdminRequest
 {
-    public function authorize()
-    {
-        return $this->adminUser() ? true : false;
-    }
+    // public $permissionName = 'update_me';
 
     /**
      * Get the validation rules that apply to the request.

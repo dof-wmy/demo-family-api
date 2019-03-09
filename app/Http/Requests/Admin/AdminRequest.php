@@ -2,13 +2,23 @@
 
 namespace App\Http\Requests\Admin;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\BaseRequest;
 
 use Auth;
 
-class AdminRequest extends FormRequest
+class AdminRequest extends BaseRequest
 {
     public $adminUser;
+    public $permissionName;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        if(!$this->adminUser){
+            $this->adminUser = Auth::guard('api_admin')->user();
+        }
+    }
 
     /**
      * Determine if the user is authorized to make this request.
@@ -17,7 +27,13 @@ class AdminRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        if(!$this->adminUser){
+            return false;
+        }elseif(!$this->permissionName){
+            return true;
+        }else{
+            return $this->adminUser->can($this->permissionName);
+        }
     }
 
     /**
@@ -33,9 +49,6 @@ class AdminRequest extends FormRequest
     }
 
     public function adminUser($field = null){
-        if(!$this->adminUser){
-            $this->adminUser = Auth::guard('api_admin')->user();
-        }
         return $field ? $this->adminUser->$field : $this->adminUser;
     }
 }

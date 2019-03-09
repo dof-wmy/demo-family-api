@@ -114,9 +114,15 @@ class AuthController extends ApiController
      */
     public function me()
     {
-        return $this->response->array(auth($this->guard_name)->user()->only([
-            'username',
-            'name',
+        $user = auth($this->guard_name)->user();
+        return $this->response->array(array_merge(
+            $user->only([
+                'username',
+                'name',
+            ]), [
+            'can' => [
+                // 
+            ],
         ]));
     }
 
