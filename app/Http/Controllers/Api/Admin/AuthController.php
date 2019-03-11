@@ -41,16 +41,18 @@ class AuthController extends AdminController
     public function me()
     {
         $user = auth($this->guard_name)->user();
+        $can = [];
+        foreach(__('permission.admin_user') as $permission=>$permissionText){
+            if($user->can($permission)){
+                $can[$permission] = true;
+            }
+        }
         return $this->response->array(array_merge(
             $user->only([
                 'username',
                 'name',
             ]), [
-            'can' => [
-                'get_admin_user'    => $user->can('get_admin_user'),
-                'post_admin_user'   => $user->can('post_admin_user'),
-                'delete_admin_user' => $user->can('delete_admin_user'),
-            ],
+            'can' => $can,
         ]));
     }
 
