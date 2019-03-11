@@ -57,5 +57,8 @@ $api->version('v1', [
         $api->get('admin_users', 'AdminUserController@index');
         $api->post('admin_users/{id?}', 'AdminUserController@saveAdminUser');
         $api->delete('admin_users', 'AdminUserController@deleteAdminUser');
+        $api->get('admin_groups', 'AdminGroupController@index');
+        $api->post('admin_groups/{groupId}/permissions/{permissionId}', 'AdminGroupController@givePermission');
+        $api->delete('admin_groups/{groupId}/permissions/{permissionId}', 'AdminGroupController@revokePermission');
     });
 });
