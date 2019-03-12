@@ -21,10 +21,15 @@ php artisan permission:create-role super-admin admin_user
 ### 后台：新增权限
 
 php artisan permission:create-permission get_admin_user admin_user
+
 php artisan permission:create-permission post_admin_user admin_user
+
 php artisan permission:create-permission delete_admin_user admin_user
+
 php artisan permission:create-permission get_admin_group admin_user
+
 php artisan permission:create-permission post_permission_of_admin_group admin_user
+
 php artisan permission:create-permission delete_permission_of_admin_group admin_user
 
 ### 后台：新建管理员
