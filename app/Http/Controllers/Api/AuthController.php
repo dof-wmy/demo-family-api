@@ -150,6 +150,20 @@ class AuthController extends ApiController
         return $this->respondWithToken(auth($this->guard_name)->refresh());
     }
 
+    public function updateMe(Request $request)
+    {
+        $user = auth($this->guard_name)->user();
+        foreach([
+            'mobile',
+        ] as $field){
+            if($request->$field){
+                $user->$field = $request->$field;
+            }
+        }
+        $user->save();
+        return $this->me();
+    }
+
     /**
      * Get the token array structure.
      *
