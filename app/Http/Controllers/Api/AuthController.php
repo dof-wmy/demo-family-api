@@ -119,7 +119,9 @@ class AuthController extends ApiController
             $user->only([
                 'username',
                 'name',
+                'mobile',
             ]), [
+            'roles' => $user->getRoleNames(),
             'can' => [
                 // 
             ],
