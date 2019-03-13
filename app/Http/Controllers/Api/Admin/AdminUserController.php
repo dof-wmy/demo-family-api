@@ -16,6 +16,11 @@ use Carbon\Carbon;
 
 class AdminUserController extends AdminController
 {
+    public function __construct()
+    {
+        $this->middleware('api.auth');
+    }
+
     public function index(GetAdminUserRequest $request){
         $mod = AdminUser::with([
             'roles',
