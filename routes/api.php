@@ -41,6 +41,7 @@ $api->version('v1', [
     });
     $api->post('feedback', 'FeedbackController@store');
     $api->post('announcements/read', 'Announcementcontroller@read');
+    $api->post('notices/read', 'Noticecontroller@read');
 
     // 后台
     $api->group([
