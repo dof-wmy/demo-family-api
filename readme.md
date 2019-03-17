@@ -2,10 +2,6 @@
 
 ## 命令
 
-### composer install
-
-composer install -vvv
-
 ### 生成加密密钥
 
 php artisan key:generate
