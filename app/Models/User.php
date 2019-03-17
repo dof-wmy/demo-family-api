@@ -99,6 +99,10 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsToMany(Announcement::class);
     }
 
+    public function notices(){
+        return $this->hasMany(Notice::class);
+    }
+
     // Rest omitted for brevity
 
     /**
