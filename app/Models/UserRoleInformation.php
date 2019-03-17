@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-class RoleInformation extends Base
+class UserRoleInformation extends Base
 {
     //
 }

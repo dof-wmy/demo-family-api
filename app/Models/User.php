@@ -70,7 +70,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function roleInformation($roleName = ''){
-        $model = $this->hasMany(RoleInformation::class);
+        $model = $this->hasMany(UserRoleInformation::class);
         if($roleName){
             $role = self::getRole($roleName);
             if($role){
