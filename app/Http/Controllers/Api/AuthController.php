@@ -17,11 +17,20 @@ class AuthController extends ApiController
      */
     public function __construct()
     {
-        $this->middleware('api.auth', [
-            'except' => [
-                'login',
-                'loginByWechat',
-            ],
+        parent::__construct();
+
+        $this->middleware(function ($request, $next) {
+            // 前置操作
+            if(empty($this->user)){
+                return $this->response->errorUnauthorized('请先登录...');
+            }
+            $response = $next($request);
+
+            // 后置操作
+            return $response;
+        })->except([
+            'login',
+            'loginByWechat',
         ]);
     }
 

@@ -18,7 +18,18 @@ class AdminUserController extends AdminController
 {
     public function __construct()
     {
-        $this->middleware('api.auth');
+        parent::__construct();
+
+        $this->middleware(function ($request, $next) {
+            // 前置操作
+            if(empty($this->user)){
+                return $this->response->errorUnauthorized('请先登录...');
+            }
+            $response = $next($request);
+
+            // 后置操作
+            return $response;
+        });
     }
 
     public function index(GetAdminUserRequest $request){
@@ -105,7 +116,7 @@ class AdminUserController extends AdminController
     public function deleteAdminUser(DeleteAdminUserRequest $request){
         $ids = is_array($request->ids) ? $request->ids : explode(',', $request->ids);
         $ids = array_diff($ids, [
-            $this->currentAdminUser->id,
+            $this->user->id,
         ]);
         $mod = AdminUser::whereIn('id', $ids);
         if($request->undo){
