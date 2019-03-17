@@ -69,7 +69,7 @@ class User extends Authenticatable implements JWTSubject
         return $this->register_source();
     }
 
-    public function roleInformations($roleName = ''){
+    public function roleInformation($roleName = ''){
         $model = $this->hasMany(RoleInformation::class);
         if($roleName){
             $role = self::getRole($roleName);
