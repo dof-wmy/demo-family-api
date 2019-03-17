@@ -91,6 +91,10 @@ class User extends Authenticatable implements JWTSubject
         return $model;
     }
 
+    public function feedback(){
+        return $this->hasMany(Feedback::class);
+    }
+
     // Rest omitted for brevity
 
     /**
