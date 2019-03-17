@@ -40,6 +40,7 @@ $api->version('v1', [
         $api->post('me/update', 'AuthController@updateMe');
     });
     $api->post('feedback', 'FeedbackController@store');
+    $api->post('announcements/read', 'Announcementcontroller@read');
 
     // 后台
     $api->group([

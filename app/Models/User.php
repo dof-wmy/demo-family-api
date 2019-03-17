@@ -137,4 +137,16 @@ class User extends Authenticatable implements JWTSubject
             'guard_name' => (new self())->guard_name,
         ])->first();
     }
+
+    public function getAnnouncements(){
+        $user = $this;
+        $announcements = Announcement::orderBy('id', 'desc')->get();
+        $notReadAnnouncementIds = Announcement::whereDoesntHave('users', function($query) use($user){
+            $query->where('user_id', $user->id);
+        })->orderBy('id', 'desc')->pluck('id')->toArray();
+        return $announcements->map(function($announcement) use($user, $notReadAnnouncementIds){
+            $announcement->has_read = !in_array($announcement->id, $notReadAnnouncementIds);
+            return $announcement;
+        });
+    }
 }
