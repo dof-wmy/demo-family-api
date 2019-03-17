@@ -38,9 +38,8 @@ $api->version('v1', [
         $api->post('refresh', 'AuthController@refresh');
         $api->post('me', 'AuthController@me');
         $api->post('me/update', 'AuthController@updateMe');
-
-        $api->post('feedback', 'FeedbackController@store');
     });
+    $api->post('feedback', 'FeedbackController@store');
 
     // 后台
     $api->group([
