@@ -18,7 +18,7 @@ class CreateNoticesTable extends Migration
             $table->unsignedBigInteger('user_id')->index();
             $table->string('title');
             $table->text('content');
-            $table->timestamp('read_at');
+            $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });
     }
