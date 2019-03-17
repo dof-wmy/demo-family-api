@@ -39,7 +39,7 @@ $api->version('v1', [
         $api->post('me', 'AuthController@me');
         $api->post('me/update', 'AuthController@updateMe');
 
-        $api->post('feedbacks', 'FeedbackController@store');
+        $api->post('feedback', 'FeedbackController@store');
     });
 
     // 后台
