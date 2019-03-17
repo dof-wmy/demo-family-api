@@ -69,6 +69,28 @@ class User extends Authenticatable implements JWTSubject
         return $this->register_source();
     }
 
+    public function roleInformations($roleName = ''){
+        $model = $this->hasMany(RoleInformation::class);
+        if($roleName){
+            $role = self::getRole($roleName);
+            if($role){
+                $model->where('role_id', $role->id);
+            }
+        }
+        return $model;
+    }
+
+    public function roleAttributes($roleName = ''){
+        $model = $this->belongsToMany(RoleAttribute::class);
+        if($roleName){
+            $role = self::getRole($roleName);
+            if($role){
+                $model->whereIn('role_attribute_id', RoleAttribute::where('role_id', $role)->pluck('id')->toArray());
+            }
+        }
+        return $model;
+    }
+
     // Rest omitted for brevity
 
     /**
@@ -99,5 +121,12 @@ class User extends Authenticatable implements JWTSubject
         $username .= $prefix ?: '';
         $username .= Str::uuid();
         return $username;
+    }
+
+    static function getRole($roleName){
+        return Role::where([
+            'name'       => $roleName,
+            'guard_name' => (new self())->guard_name,
+        ])->first();
     }
 }
