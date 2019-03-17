@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 
+use Carbon\Carbon;
+
 class Announcementcontroller extends ApiController
 {
     /**
@@ -30,7 +32,14 @@ class Announcementcontroller extends ApiController
     public function read(Request $request){
         $ids = $request->ids;
         $ids = is_string($ids) ? explode(',', $ids) : $ids;
-        $this->user->announcements()->attach($ids);
+        $data = [];
+        foreach($ids as $id){
+            $data[$id] = [
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ];
+        }
+        $this->user->announcements()->attach($data);
         return $this->response->noContent();
     }
 }
