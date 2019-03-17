@@ -35,7 +35,7 @@ class UserNotice extends Notification
     public function via($notifiable)
     {
         return [
-            UserNotice::class,
+            NoticeChannel::class,
         ];
     }
 
