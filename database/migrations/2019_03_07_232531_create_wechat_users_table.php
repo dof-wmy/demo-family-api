@@ -18,7 +18,7 @@ class CreateWechatUsersTable extends Migration
             $table->string('openid')->index();
             $table->string('app_id')->index();
             $table->string('app_type');
-            $table->string('user_id')->index()->nullable();
+            $table->unsignedBigInteger('user_id')->index()->nullable();
             $table->json('detail')->nullable();
             $table->string('nickname')->nullable();
             $table->string('headimgurl')->nullable();

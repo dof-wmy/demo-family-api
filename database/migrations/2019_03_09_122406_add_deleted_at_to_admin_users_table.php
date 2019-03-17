@@ -26,7 +26,7 @@ class AddDeletedAtToAdminUsersTable extends Migration
     public function down()
     {
         Schema::table('admin_users', function (Blueprint $table) {
-            $table->dropColumn('votes');
+            $table->dropColumn('deleted_at');
         });
     }
 }
