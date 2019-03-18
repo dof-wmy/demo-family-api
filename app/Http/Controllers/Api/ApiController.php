@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Dingo\Api\Routing\Helpers;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+
 use Auth;
 
 class ApiController extends Controller
@@ -37,5 +39,15 @@ class ApiController extends Controller
         return $this->response->array([
             'error_message' => $message,
         ]);
+    }
+
+    public function paginatorTransformer(LengthAwarePaginator $paginator){
+        return [
+            'paginatorTransformer' => [
+                'current'     => $paginator->currentPage(),
+                'pageSize'    => $paginator->perPage(),
+                'total'       => $paginator->total(),
+            ],
+        ];
     }
 }
