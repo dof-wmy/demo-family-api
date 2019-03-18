@@ -67,5 +67,6 @@ $api->version('v1', [
         $api->get('users', 'UserController@index');
         $api->post('users/{ids}/blacklist', 'UserController@blacklist');
         $api->delete('users/{ids}/blacklist', 'UserController@unblacklist');
+        $api->get('feedback', 'FeedbackController@index');
     });
 });
