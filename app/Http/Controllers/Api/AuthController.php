@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\WechatUser;
 
+use App\Transformers\MeTransformer;
+
 class AuthController extends ApiController
 {
     /**
@@ -124,17 +126,7 @@ class AuthController extends ApiController
     public function me()
     {
         $user = auth($this->guard_name)->user();
-        return $this->response->array(array_merge(
-            $user->only([
-                'username',
-                'name',
-                'mobile',
-            ]), [
-            'roles' => $user->getRoleNames(),
-            'can' => [
-                // 
-            ],
-        ]));
+        return $this->response->item($user, new MeTransformer);
     }
 
     /**
