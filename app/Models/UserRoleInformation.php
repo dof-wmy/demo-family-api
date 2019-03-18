@@ -10,6 +10,7 @@ class UserRoleInformation extends Base
      * @var array
      */
     protected $fillable = [
+        'user_id',
         'role_id',
         'key',
         'value',
