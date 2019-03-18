@@ -64,5 +64,8 @@ $api->version('v1', [
         $api->get('admin_groups', 'AdminGroupController@index');
         $api->post('admin_groups/{groupId}/permissions/{permissionId}', 'AdminGroupController@givePermission');
         $api->delete('admin_groups/{groupId}/permissions/{permissionId}', 'AdminGroupController@revokePermission');
+        $api->get('users', 'UserController@index');
+        $api->post('users/{ids}/blacklist', 'UserController@blacklist');
+        $api->delete('users/{ids}/blacklist', 'UserController@unblacklist');
     });
 });

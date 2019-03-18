@@ -13,6 +13,8 @@ use Auth;
 class ApiController extends Controller
 {
     use Helpers;
+
+    public $pageSize = 10;
     public $guard_name = 'api';
     public $user;
 
