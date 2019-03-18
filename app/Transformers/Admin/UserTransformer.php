@@ -19,9 +19,9 @@ class UserTransformer extends TransformerAbstract
             'id',
             'username',
             'name',
-            'is_black',
+            'blacklist',
             'created_at',
-        ])->toArray();
+        ]);
     }
 
 }

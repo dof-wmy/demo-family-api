@@ -43,7 +43,7 @@ class UserController extends AdminController
         }
         $users = $model->paginate($this->pageSize);
         return $this->response
-            ->paginator($adminUsers, new UserTransformer)
+            ->paginator($users, new UserTransformer)
             ->setMeta(array_merge(
                 []
             ));

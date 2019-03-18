@@ -29,6 +29,7 @@ class User extends Authenticatable implements JWTSubject
         'mobile',
         'password',
         'name',
+        'blacklist',
     ];
 
     /**

@@ -14,7 +14,7 @@ class AddBlacklistToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->timestamp('blacklist')->nullable()->before('created_at');
+            $table->unsignedTinyInteger('blacklist')->nullable()->before('created_at');
         });
     }
 
