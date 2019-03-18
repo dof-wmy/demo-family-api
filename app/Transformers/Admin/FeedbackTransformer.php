@@ -3,7 +3,7 @@
 namespace App\Transformers\Admin;
 
 use League\Fractal\TransformerAbstract;
-use App\Models\User;
+use App\Models\Feedback;
 
 class FeedbackTransformer extends TransformerAbstract
 {
@@ -17,7 +17,6 @@ class FeedbackTransformer extends TransformerAbstract
     {
         $result = $feedback->only([
             'id',
-            'title',
             'content',
             'created_at',
         ]);

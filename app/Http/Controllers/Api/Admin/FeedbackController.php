@@ -29,7 +29,7 @@ class FeedbackController extends AdminController
         });
     }
 
-    public function index(GetUserRequest $request){
+    public function index(GetFeedbackRequest $request){
         $model = Feedback::with([
             'user',
         ]);
