@@ -45,6 +45,7 @@ class UserController extends AdminController
         return $this->response
             ->paginator($users, new UserTransformer)
             ->setMeta(array_merge(
+                $this->paginatorTransformer($users),
                 []
             ));
     }
