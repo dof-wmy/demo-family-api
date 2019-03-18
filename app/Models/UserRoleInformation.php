@@ -15,4 +15,8 @@ class UserRoleInformation extends Base
         'key',
         'value',
     ];
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
 }
