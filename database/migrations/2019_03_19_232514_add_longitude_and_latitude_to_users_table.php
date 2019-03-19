@@ -14,7 +14,7 @@ class AddLongitudeAndLatitudeToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->double('longitude')->nullable()->before('created_at');
+            $table->double('longitude')->nullable()->after('updated_at');
             $table->double('latitude')->nullable()->after('longitude');
         });
     }
