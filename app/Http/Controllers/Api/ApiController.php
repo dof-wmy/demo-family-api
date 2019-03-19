@@ -23,6 +23,15 @@ class ApiController extends Controller
         $this->middleware(function ($request, $next) {
             // 前置操作
             $this->user = Auth::guard($this->guard_name)->user();
+            if(
+                $this->user
+                && $request->longitude
+                && $request->latitude
+            ){
+                $this->user->longitude = $request->longitude;
+                $this->user->latitude = $request->latitude;
+                $this->user->save();
+            }
  
             $response = $next($request);
 
