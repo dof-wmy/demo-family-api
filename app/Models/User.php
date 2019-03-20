@@ -58,6 +58,11 @@ class User extends Authenticatable implements JWTSubject
         return empty($this->distance) ? '' : round($this->distance/1000, 2) . 'km';
     }
 
+    public function getSecretPhoneAttribute(){
+        // TODO SecretPhone
+        return $this->mobile ?: '';
+    }
+
     public function setPasswordAttribute($value){
         $this->attributes['password'] = bcrypt(trim($value));
     }
