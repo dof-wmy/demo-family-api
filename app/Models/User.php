@@ -9,6 +9,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Str;
 
+use DB;
+
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
@@ -165,6 +167,6 @@ class User extends Authenticatable implements JWTSubject
     }
 
     static function getDistanceFieldSql($longitude = null, $latitude = null){
-        return $longitude && $latitude ? "ST_Distance_Sphere(point(users.longitude, users.latitude), point({$longitude}, {$latitude})) * .000621371192 AS distance" : DB::raw('0 AS distance');
+        return $longitude && $latitude ? DB::raw("ST_Distance_Sphere(point(users.longitude, users.latitude), point({$longitude}, {$latitude})) * .000621371192 AS distance") : DB::raw('0 AS distance');
     }
 }
