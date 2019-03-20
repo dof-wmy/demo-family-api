@@ -19,7 +19,14 @@ class EventServiceProvider extends ServiceProvider
             SendEmailVerificationNotification::class,
         ],
     ];
-
+    /**
+     * 需要注册的订阅者类。
+     *
+     * @var array
+     */
+    protected $subscribe = [
+        'App\Listeners\WechatUserEventSubscriber',
+    ];
     /**
      * Register any events for your application.
      *
