@@ -54,6 +54,10 @@ class User extends Authenticatable implements JWTSubject
         return (new self())->guard_name;
     }
 
+    public function getDistanceAttribute(){
+        return empty($this->distance) ? '' : round($this->distance/1000, 2) . 'km';
+    }
+
     public function setPasswordAttribute($value){
         $this->attributes['password'] = bcrypt(trim($value));
     }
@@ -153,5 +157,9 @@ class User extends Authenticatable implements JWTSubject
             $announcement->has_read = !in_array($announcement->id, $notReadAnnouncementIds);
             return $announcement;
         });
+    }
+
+    static function getDistanceFieldSql($longitude = null, $latitude = null){
+        return $longitude && $latitude ? "ST_Distance_Sphere(point(users.longitude, users.latitude), point({$longitude}, {$latitude})) * .000621371192 AS distance" : DB::raw('0 AS distance');
     }
 }
