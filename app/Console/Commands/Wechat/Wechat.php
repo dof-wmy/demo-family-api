@@ -66,10 +66,14 @@ class Wechat extends Command
         $count = 0;
         do{
             $usersList = $this->wechatApp->user->$do($nextOpenId);
-            event(new UserList($this->wechatApp, $usersList['data']['openid']));
-            $count += $usersList['count'];
-            $remainCount = $usersList['total'] - $count;
-            $nextOpenId = $usersList['next_openid'];
+            if(!empty($usersList['data'])){
+                event(new UserList($this->wechatApp, $usersList['data']['openid']));
+                $count += $usersList['count'];
+                $remainCount = $usersList['total'] - $count;
+                $nextOpenId = $usersList['next_openid'] == collect($usersList['data']['openid'])->last() ? null : $usersList['next_openid'];
+            }else{
+                $nextOpenId = null;
+            }
         }while(
             $nextOpenId
             && ($remainCount > 0)
