@@ -67,15 +67,15 @@ class Wechat extends Command
         }
 
         if($do == 'list'){
-            $this->userList();
+            $this->userList($do);
         }elseif($do == 'select'){
-            $this->userInfoList();
+            $this->userInfoList($do);
         }else{
             // 
         };
     }
 
-    protected function userList(){
+    protected function userList($do){
         $this->info("获取用户列表 ...");
         $nextOpenId = trim($this->ask("请输入 nextOpenId，为空则获取全部"));
         $nextOpenId = $nextOpenId ?: null;
@@ -99,7 +99,7 @@ class Wechat extends Command
         $this->info("获取用户列表结束 ...");
     }
 
-    protected function userInfoList(){
+    protected function userInfoList($do){
         $this->info("获取用户信息列表 ...");
         $openids = []; // TODO openids来源
         $openids = collect($openids);
