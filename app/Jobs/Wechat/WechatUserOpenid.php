@@ -17,16 +17,16 @@ class WechatUserOpenid implements ShouldQueue
     public $tries = 1;
     public $timeout = 30;
 
-    protected $wechatApp;
+    protected $wechatAppConfig;
     protected $openid;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($wechatApp, $openid)
+    public function __construct($wechatAppConfig, $openid)
     {
-        $this->wechatApp = $wechatApp;
+        $this->wechatAppConfig = $wechatAppConfig;
         $this->openid = $openid;
     }
 
@@ -38,8 +38,8 @@ class WechatUserOpenid implements ShouldQueue
     public function handle()
     {
         $wechatUser = WechatUser::firstOrCreate([
-            'app_type' => $this->wechatApp->config->app_type, // config/wechat.php 文件里每个账户里要单独配置 app_type，否则根据环境变量取值
-            'app_id'   => $this->wechatApp->config->app_id,
+            'app_type' => $this->wechatAppConfig->app_type, // config/wechat.php 文件里每个账户里要单独配置 app_type，否则根据环境变量取值
+            'app_id'   => $this->wechatAppConfig->app_id,
             'openid'   => $this->openid,
         ]);
     }

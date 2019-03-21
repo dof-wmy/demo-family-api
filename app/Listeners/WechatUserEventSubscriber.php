@@ -11,7 +11,7 @@ class WechatUserEventSubscriber
      */
     public function onUserList($event) {
         foreach($event->openids as $openid){
-            WechatUserOpenid::dispatch($event->wechatApp, $openid)->onQueue('wechat_user');
+            WechatUserOpenid::dispatch($event->wechatApp->config, $openid)->onQueue('wechat_user');
         }
     }
 
