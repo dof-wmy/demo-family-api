@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\Models\WechatUser;
+use App\Jobs\Wechat\WechatUserOpenid;
 
 class WechatUserEventSubscriber
 {
@@ -11,11 +11,7 @@ class WechatUserEventSubscriber
      */
     public function onUserList($event) {
         foreach($event->openids as $openid){
-            $wechatUser = WechatUser::firstOrCreate([
-                'app_type' => $event->wechatApp->config->app_type, // config/wechat.php 文件里每个账户里要单独配置 app_type，否则根据环境变量取值
-                'app_id'   => $event->wechatApp->config->app_id,
-                'openid'   => $openid,
-            ]);
+            WechatUserOpenid::dispatch($event->wechatApp, $openid)->onQueue('wechat_user');
         }
     }
 

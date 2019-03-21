@@ -61,7 +61,8 @@ class Wechat extends Command
 
         $do = 'list';
         $this->info("获取用户列表 ...");
-        $nextOpenId = null;
+        $nextOpenId = trim($this->ask("请输入 nextOpenId，为空则获取全部"));
+        $nextOpenId = $nextOpenId ?: null;
         $count = 0;
         do{
             $usersList = $this->wechatApp->user->$do($nextOpenId);
