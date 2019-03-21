@@ -57,9 +57,25 @@ class Wechat extends Command
 
     protected function userModule(){
         $this->info("微信用户管理 ...");
-        // TODO $do = $this->argument('do');
+        $do = $this->argument('do');
+        $doList = [
+            'list',
+            'select',
+        ];
+        while(!in_array($do, $doList)){
+            $do = $this->choice('请选择要执行的操作', $doList, 0);
+        }
 
-        $do = 'list';
+        if($do == 'list'){
+            $this->userList();
+        }elseif($do == 'select'){
+            $this->userInfoList();
+        }else{
+            // 
+        };
+    }
+
+    protected function userList(){
         $this->info("获取用户列表 ...");
         $nextOpenId = trim($this->ask("请输入 nextOpenId，为空则获取全部"));
         $nextOpenId = $nextOpenId ?: null;
@@ -73,12 +89,36 @@ class Wechat extends Command
                 $nextOpenId = $usersList['next_openid'] == collect($usersList['data']['openid'])->last() ? null : $usersList['next_openid'];
             }else{
                 $nextOpenId = null;
+                $this->error(json_encode($usersList));
             }
         }while(
             $nextOpenId
             && ($remainCount > 0)
             && $this->confirm("关注该公众账号的总用户数 {$usersList['total']}，本次拉取数量 {$usersList['count']}，剩余数量 {$remainCount}，继续拉取吗？")
         );
+        $this->info("获取用户列表结束 ...");
+    }
+
+    protected function userInfoList(){
+        $this->info("获取用户信息列表 ...");
+        $openids = []; // TODO openids来源
+        $openids = collect($openids);
+        $chunkSize = 100;
+        $chunkPage = ceil($openidsCount/$chunkSize);
+        $this->info("得到 {$openidsCount} 条记录，即将向微信请求信息，分 {$chunkPage} 批进行处理 ...");
+        foreach($openids->chunk($chunkSize) as $chunkPageIndex=>$openidsChunked){
+            $chunkPageCurrent = $chunkPageIndex + 1;
+            $this->info("第 {$chunkPageCurrent} 批处理开始（共 {$chunkPage} 批）...");
+            $wechatUsers = $wechatApp->user->$do($openidsChunked->values()->toArray());
+            if(!empty($wechatUsers['user_info_list'])){
+                foreach($wechatUsers['user_info_list'] as $wechatUser){
+                    event(new UserList($this->wechatApp, $wechatUsers['user_info_list']));
+                }
+            }else{
+                $this->error(json_encode($wechatUsers));
+            }
+        }
+        $this->info("获取用户信息列表结束 ...");
     }
 
     protected function wechatApp($appType = '', $appAccount = ''){
