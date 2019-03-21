@@ -5,6 +5,7 @@ namespace App\Console\Commands\Wechat;
 use Illuminate\Console\Command;
 
 use App\Events\Wechat\UserList;
+use App\Events\Wechat\UserInfoList;
 
 class Wechat extends Command
 {
@@ -103,17 +104,16 @@ class Wechat extends Command
         $this->info("获取用户信息列表 ...");
         $openids = []; // TODO openids来源
         $openids = collect($openids);
+        $openidsCount = $openids->count();
         $chunkSize = 100;
         $chunkPage = ceil($openidsCount/$chunkSize);
         $this->info("得到 {$openidsCount} 条记录，即将向微信请求信息，分 {$chunkPage} 批进行处理 ...");
         foreach($openids->chunk($chunkSize) as $chunkPageIndex=>$openidsChunked){
             $chunkPageCurrent = $chunkPageIndex + 1;
             $this->info("第 {$chunkPageCurrent} 批处理开始（共 {$chunkPage} 批）...");
-            $wechatUsers = $wechatApp->user->$do($openidsChunked->values()->toArray());
+            $wechatUsers = $this->wechatApp->user->$do($openidsChunked->values()->toArray());
             if(!empty($wechatUsers['user_info_list'])){
-                foreach($wechatUsers['user_info_list'] as $wechatUser){
-                    event(new UserList($this->wechatApp, $wechatUsers['user_info_list']));
-                }
+                event(new UserInfoList($this->wechatApp, $wechatUsers['user_info_list']));
             }else{
                 $this->error(json_encode($wechatUsers));
             }
