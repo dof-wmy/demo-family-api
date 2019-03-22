@@ -70,6 +70,7 @@ return [
             'secret'    => env('WECHAT_OFFICIAL_ACCOUNT_SECRET', 'your-app-secret'),    // AppSecret
             'token'     => env('WECHAT_OFFICIAL_ACCOUNT_TOKEN', 'your-token'),           // Token
             'aes_key'   => env('WECHAT_OFFICIAL_ACCOUNT_AES_KEY', ''),                 // EncodingAESKey
+            'app_type'  => 'official_account',
 
             /*
              * OAuth 配置
@@ -105,6 +106,7 @@ return [
             'secret'  => env('WECHAT_MINI_PROGRAM_SECRET', ''),
             'token'   => env('WECHAT_MINI_PROGRAM_TOKEN', ''),
             'aes_key' => env('WECHAT_MINI_PROGRAM_AES_KEY', ''),
+            'app_type'=> 'mini_program',
         ],
     ],
 
