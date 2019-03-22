@@ -59,14 +59,13 @@ class AuthController extends ApiController
                 $wechatUser = WechatUser::where('openid', $mockOpenid)->first();
             }
             if(empty($wechatUser)){
-                $code = $request->code;
-                if(empty($code)){
+                if(empty($request->code)){
                     return $this->response->errorUnauthorized('code不能为空');
                 }
                 $wechatUser = WechatUser::firstByRequest($request);
             }
             if(!blank($wechatUser)){
-                $user = $wechatUser->user()->first();
+                $user = $wechatUser->getUser();
                 if(empty($user)){
                     $create = true;
                     if($create){
@@ -77,24 +76,8 @@ class AuthController extends ApiController
                     }
                 }
                 // 更新微信用户信息
-                $force = false;
+                $force = true;
                 $wechatUserDetail = null;
-                if($wechatUser->app_type == 'mini_program'){
-                    if($request->has('user_info')){
-                        $userInfo = $request->user_info;
-                        $userInfo = json_decode($userInfo, true);
-                        $force = true;
-                        $wechatUserDetail = $wechatUser->detail;
-                        if($avatarUrl = array_get($userInfo, 'avatarUrl')){
-                            $wechatUserDetail['headimgurl'] = $avatarUrl;
-                        }
-                        if($nickName = array_get($userInfo, 'nickName')){
-                            $wechatUserDetail['nickname'] = $nickName;
-                        }
-                    }
-                }else{
-                    // 
-                }
                 $wechatUser->updateFromWechat($force, $wechatUserDetail);
             }
         }catch(\Exception $e){
@@ -154,13 +137,6 @@ class AuthController extends ApiController
     public function updateMe(Request $request)
     {
         $user = auth($this->guard_name)->user();
-        foreach([
-            'mobile',
-        ] as $field){
-            if($request->$field){
-                $user->$field = $request->$field;
-            }
-        }
         $user->save();
         return $this->me();
     }
