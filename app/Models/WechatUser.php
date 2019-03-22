@@ -54,12 +54,19 @@ class WechatUser extends Base
                 'nickname'    => $wechatOauthUser->getNickname(),
                 'headimgurl'  => $wechatOauthUser->getAvatar(),
             ];
+            if(!empty($wechatOauthUser['unionid'])){
+                $wechatUserDetail['unionid'] = $wechatOauthUser['unionid'];
+            }
         }elseif($wechatAppType == 'mini_program'){
             $wechatAuthSession = $wechatApp->auth->session($request->code);
             if(!empty($wechatAuthSession['openid'])){
                 $wechatUserDetail = [
                     'openid'      => $wechatAuthSession['openid'],
+                    'session_key' => $wechatAuthSession['session_key'],
                 ];
+                if(!empty($wechatAuthSession['unionid'])){
+                    $wechatUserDetail['unionid'] = $wechatAuthSession['unionid'];
+                }
             }else{
                 // TODO 小程序登录失败
             }
@@ -76,10 +83,31 @@ class WechatUser extends Base
                 'nickname'    => array_get($wechatUserDetail, 'nickname', null),
                 'headimgurl'  => array_get($wechatUserDetail, 'headimgurl', null),
             ]);
+            if(!empty($wechatUserDetail['unionid'])){
+                $wechatUser->unionid = $wechatUserDetail['unionid'];
+            }
             return $wechatUser;
         }else{
             return null;
         }
+    }
+
+    public function getUser(){
+        $wechatUser = $this;
+        $user = $wechatUser->user()->first();
+        if(empty($user) && !empty($wechatUser->unionid)){
+            $otherWechatUser = WechatUser::with([
+                'user',
+            ])->where([
+                'unionid' => $wechatUser->unionid,
+            ])->whereHas('user')->first();
+            if($otherWechatUser){
+                $user = $otherWechatUser->user;
+                $wechatUser->user_id = $otherWechatUser->user_id;
+                $wechatUser->save();
+            }
+        }
+        return $user;
     }
 
     public function createUser(){
