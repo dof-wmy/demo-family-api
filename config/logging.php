@@ -89,6 +89,13 @@ return [
             'driver' => 'errorlog',
             'level' => 'debug',
         ],
+
+        'aliyun_daily' => [
+            'driver' => 'daily',
+            'path'   => storage_path('logs/aliyun.log'),
+            'level'  => 'debug',
+            'days'   => 15,
+        ],
     ],
 
 ];
