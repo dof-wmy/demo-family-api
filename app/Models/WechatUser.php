@@ -133,7 +133,7 @@ class WechatUser extends Base
                     // TODO 判断数据有效性
                 }
             }
-            $this->detail = $wechatUserDetail;
+            $this->detail = array_merge($this->detail, $wechatUserDetail);
             $this->save();
             // detail保存之后（以防数据长度引起丢失数据）再更新其他冗余字段
             $this->updateFromDetail();
@@ -143,11 +143,16 @@ class WechatUser extends Base
 
     public function updateFromDetail(){
         foreach([
-            'nickname',
-            'headimgurl',
-        ] as $field){
+            'nickname'      => 'nickname',
+            'headimgurl'    => 'headimgurl',
+            'unionId'       => 'unionid',
+            'nickName'      => 'nickname',
+            'avatarUrl'     => 'headimgurl',
+            'unionId'       => 'unionid',
+
+        ] as $field => $wechatUserField){
             if(array_get($this->detail, $field)){
-                $this->$field = $this->detail[$field];
+                $this->$wechatUserField = $this->detail[$field];
             }
         }
         $this->save();

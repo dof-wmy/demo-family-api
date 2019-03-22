@@ -137,6 +137,18 @@ class AuthController extends ApiController
     public function updateMe(Request $request)
     {
         $user = auth($this->guard_name)->user();
+        if($request->has('encryptedData') && $request->has('iv')){
+            $wechatUser = WechatUser::where([
+                'user_id'  => $user->id,
+                'app_type' => 'mini_program',
+                'app_id'   => config('wechat.mini_program.default.app_id')
+            ])->first();
+            $decryptedData = $wechatUser->wechat_app->encryptor->decryptData($wechatUser->detail['session_key'], $request->iv, $request->encryptedData);
+            $wechatUser->updateFromWechat(true, $decryptedData);
+            if(!empty($decryptedData['phoneNumber'])){
+                $user->mobile = $decryptedData['phoneNumber'];
+            }
+        }
         $user->save();
         return $this->me();
     }
