@@ -14,7 +14,7 @@ class AddUnionidToWechatUsersTable extends Migration
     public function up()
     {
         Schema::table('wechat_users', function (Blueprint $table) {
-            $table->double('unionid')->nullable()->after('openid');
+            $table->string('unionid')->nullable()->after('openid');
         });
     }
 
