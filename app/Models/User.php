@@ -10,6 +10,9 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Str;
 
 use DB;
+use Log;
+use Cache;
+use Carbon\Carbon;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -60,9 +63,41 @@ class User extends Authenticatable implements JWTSubject
         return empty($this->distance) ? '' : round($this->distance/1000, 2) . 'km';
     }
 
-    public function getSecretPhoneAttribute(){
-        // TODO SecretPhone
-        return $this->mobile ?: '';
+    public function getSecretPhone($query = []){
+        $phone = $this->mobile;
+
+        $secretPhone = $phone;
+        if($phone){
+            $expireAfterMinutes = 10;
+            $cacheKey = "secret_phone:{$phone}";
+            $secretPhone = Cache::remember($cacheKey, $expireAfterMinutes, function() use($query, $phone, $expireAfterMinutes){
+                $data = config('aliyun.product.pls');
+                $data['options']['query']['PhoneNoA'] = $phone;
+                $data['options']['query']['Expiration'] = Carbon::now()->addMinutes($expireAfterMinutes + 1);
+                foreach($query as $queryKey=>$queryValue){
+                    $data['options']['query'][$queryKey] = $queryValue;
+                }
+                try{
+                    $aliyunApp = app("aliyun");
+                    $response = clone $aliyunApp;
+                    foreach($data as $methodName=>$methodParams){
+                        $response = is_null($methodParams) ? $response->$methodName() : $response->$methodName($methodParams);
+                    }
+                    if(config('aliyun.log.level') == 'debug'){
+                        Log::channel('aliyun_daily')->info(json_encode($data), $response->toArray());
+                    }
+                    return array_get($response, 'SecretBindDTO.SecretNo');
+                }catch(\Exception $e){
+                    Log::channel('aliyun_daily')->error((string) $e);
+                }
+            });
+            if(empty($secretPhone)){
+                $secretPhone = $phone;
+                Cache::forget($cacheKey);
+            }
+        }
+
+        return $secretPhone;
     }
 
     public function setPasswordAttribute($value){
