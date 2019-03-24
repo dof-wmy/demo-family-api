@@ -59,6 +59,18 @@ class User extends Authenticatable implements JWTSubject
         return (new self())->guard_name;
     }
 
+    public function getAvatarAttribute(){
+        $avatar = null;
+        $wechatUsers = $this->wechatUsers()->get();
+        foreach($wechatUsers as $wechatUser){
+            if($wechatUser->avatar){
+                $avatar = $wechatUser->avatar;
+                break;
+            }
+        }
+        return $avatar;
+    }
+
     public function getDistanceAttribute(){
         return empty($this->distance) ? '' : round($this->distance/1000, 2) . 'km';
     }
@@ -114,6 +126,10 @@ class User extends Authenticatable implements JWTSubject
     public function registerSource()
     {
         return $this->register_source();
+    }
+
+    public function wechatUsers(){
+        return $this->hasMany(WechatUser::class);
     }
 
     public function roleInformation($roleName = ''){
