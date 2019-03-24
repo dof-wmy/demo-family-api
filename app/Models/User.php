@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use DB;
 use Log;
 use Cache;
+use Storage;
 use Carbon\Carbon;
 
 class User extends Authenticatable implements JWTSubject
@@ -59,13 +60,24 @@ class User extends Authenticatable implements JWTSubject
         return (new self())->guard_name;
     }
 
-    public function getAvatarAttribute(){
-        $avatar = null;
-        $wechatUsers = $this->wechatUsers()->get();
-        foreach($wechatUsers as $wechatUser){
-            if($wechatUser->avatar){
-                $avatar = $wechatUser->avatar;
-                break;
+    public function getAvatarAttribute($avatar){
+        if(!empty($avatar)){
+            $avatar = @json_decode($avatar, true);
+            if($avatar){
+                if(!empty($avatar['data_url'])){
+                    $avatar = $avatar['data_url'];
+                }elseif(!empty($avatar['disk']) && !empty($avatar['path'])){
+                    $avatar = Storage::disk($avatar['disk'])->url($avatar['path']);
+                }
+            }
+        }
+        if(empty($avatar)){
+            $wechatUsers = $this->wechatUsers()->get();
+            foreach($wechatUsers as $wechatUser){
+                if($wechatUser->avatar){
+                    $avatar = $wechatUser->avatar;
+                    break;
+                }
             }
         }
         return $avatar;
