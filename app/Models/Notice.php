@@ -9,6 +9,11 @@ class Notice extends Base
         'content',
     ];
 
+    public function source()
+    {
+        return $this->morphTo();
+    }
+
     public function user(){
         $this->belongsTo(User::class);
     }

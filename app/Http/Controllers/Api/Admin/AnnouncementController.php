@@ -54,6 +54,7 @@ class AnnouncementController extends AdminController
         $announcement->title = $request->title;
         $announcement->content = $request->content;
         $announcement->save();
+        $announcement->publish();
         return $this->response->item($announcement, new AnnouncementTransformer);
     }
 }

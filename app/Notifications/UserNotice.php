@@ -41,8 +41,10 @@ class UserNotice extends Notification
 
     public function toNotice($notifiable){
         $this->user->notices()->create([
-            'title'   => array_get($this->data, 'title', '系统提醒'),
-            'content' => array_get($this->data, 'content', ''),
+            'source_id'   => array_get($this->data, 'source_id'),
+            'source_type' => array_get($this->data, 'source_type'),
+            'title'       => array_get($this->data, 'title', '系统提醒'),
+            'content'     => array_get($this->data, 'content', ''),
         ]);
     }
 }

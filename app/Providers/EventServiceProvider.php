@@ -18,6 +18,10 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+
+        'App\Events\AnnouncementPublished' => [
+            'App\Listeners\UserNotice',
+        ],
     ];
     /**
      * 需要注册的订阅者类。
