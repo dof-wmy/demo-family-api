@@ -128,6 +128,10 @@ class User extends Authenticatable implements JWTSubject
         $this->attributes['password'] = bcrypt(trim($value));
     }
 
+    public function setAvatarAttribute($value){
+        $this->attributes['avatar'] = $value ? json_encode($value) : null;
+    }
+
     /**
      * 获得用户注册来源的模型。
      */

@@ -149,6 +149,11 @@ class AuthController extends ApiController
                 $user->mobile = $decryptedData['phoneNumber'];
             }
         }
+        if($request->avatar){
+            $user->avatar = [
+                'data_url' => $request->avatar,
+            ];
+        }
         $user->save();
         return $this->me();
     }
