@@ -26,7 +26,7 @@ class Announcement extends Base
     }
 
     public function publish(){
-        $this->publish_at = Carbon::now();
+        $this->published_at = Carbon::now();
         $this->save();
         event(new \App\Events\AnnouncementPublished($this));
     }
