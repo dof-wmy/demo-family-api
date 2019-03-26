@@ -55,6 +55,8 @@ class Init extends Command
         $adminRoleGuardName = (new AdminUser())->guard_name;
         foreach([
             'super-admin', // 超级管理员
+            'admin',
+            'editor',
         ] as $adminRoleName){
             $this->call("permission:create-role", [
                 'name'  => $adminRoleName,
