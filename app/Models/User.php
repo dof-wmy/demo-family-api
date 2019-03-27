@@ -234,6 +234,6 @@ class User extends Authenticatable implements JWTSubject
     }
 
     static function getDistanceFieldSql($longitude = null, $latitude = null){
-        return $longitude && $latitude ? DB::raw("ST_Distance_Sphere(point(users.longitude, users.latitude), point({$longitude}, {$latitude})) * .000621371192 AS distance") : DB::raw('0 AS distance');
+        return $longitude && $latitude ? DB::raw("ST_Distance_Sphere(point(users.longitude, users.latitude), point({$longitude}, {$latitude})) AS distance") : DB::raw('0 AS distance');
     }
 }
