@@ -10,6 +10,9 @@ use App\Models\WechatUser;
 
 use App\Transformers\MeTransformer;
 
+use Image;
+use Storage;
+
 class AuthController extends ApiController
 {
     /**
@@ -150,8 +153,19 @@ class AuthController extends ApiController
             }
         }
         if($request->avatar){
+            $image = Image::make($request->avatar);
+            $filePath = implode('/', [
+                'user/avatar',
+                md5($user->id),
+                md5(microtime()) . '.png'
+            ]);
+            $storageDisk = 'public';
+            $storage = Storage::disk($storageDisk);
+            $storage->put($filePath, '');
+            $image->save($storage->path($filePath));
             $user->avatar = [
-                'data_url' => $request->avatar,
+                'disk' => $storageDisk,
+                'path' => $filePath,
             ];
         }
         $user->save();
