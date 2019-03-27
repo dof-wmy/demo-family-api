@@ -51,6 +51,9 @@ class Init extends Command
         $this->info('运行数据库迁移...');
         $this->call('migrate');
 
+        $this->info('文件存储系统link ...');
+        $this->call('storage:link');
+
         $this->info('后台：新增管理组...');
         $adminRoleGuardName = (new AdminUser())->guard_name;
         foreach([
