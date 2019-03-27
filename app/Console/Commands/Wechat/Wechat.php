@@ -87,7 +87,7 @@ class Wechat extends Command
                 event(new UserList($this->wechatApp, $usersList['data']['openid']));
                 $count += $usersList['count'];
                 $remainCount = $usersList['total'] - $count;
-                $nextOpenId = $usersList['next_openid'] == collect($usersList['data']['openid'])->last() ? null : $usersList['next_openid'];
+                $nextOpenId = $usersList['count'] < 10000 ? null : $usersList['next_openid'];
             }else{
                 $nextOpenId = null;
                 $this->error(json_encode($usersList));
