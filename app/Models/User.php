@@ -84,7 +84,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function getDistanceAttribute($distance){
-        return empty($distance) ? '' : ($distance/1000);
+        return empty($distance) ? '' : round(($distance/1000), 2);
     }
 
     public function getSecretPhone($query = []){
