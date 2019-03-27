@@ -188,7 +188,7 @@ return [
 
     'throttle'  => [
         'limit'     => env('API_THROTTLE_LIMIT', 1000000),
-        'expires'   => env('API_TTHROTTLE_EXPIRES', 10), // seconds
+        'expires'   => env('API_THROTTLE_EXPIRES', 10), // seconds
     ],
 
     /*
