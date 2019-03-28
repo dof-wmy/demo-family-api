@@ -32,7 +32,14 @@ class ApiController extends Controller
                 $this->user->latitude = $request->latitude;
                 $this->user->save();
             }
- 
+
+            if(
+                $this->user
+                && $this->user->blacklist
+            ){
+                return $this->errorMessage('账户异常');
+            }
+
             $response = $next($request);
 
             // 后置操作
