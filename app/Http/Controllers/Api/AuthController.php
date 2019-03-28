@@ -154,15 +154,16 @@ class AuthController extends ApiController
         }
         if($request->avatar){
             $image = Image::make($request->avatar);
+            $format = 'png';
             $filePath = implode('/', [
                 'user/avatar',
                 md5($user->id),
-                md5(microtime()) . '.png'
+                md5(microtime()) . ".{$format}"
             ]);
             $storageDisk = 'public';
             $storage = Storage::disk($storageDisk);
-            $storage->put($filePath, '');
-            $image->save($storage->path($filePath));
+            $storage->put($filePath, $image->encode($format));
+            // $image->save($storage->path($filePath));
             $user->avatar = [
                 'disk' => $storageDisk,
                 'path' => $filePath,
