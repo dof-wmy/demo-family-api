@@ -19,6 +19,8 @@ class UserTransformer extends TransformerAbstract
             'id',
             'username',
             'name',
+            'mobile',
+            'avatar',
             'blacklist',
             'created_at',
         ]);
