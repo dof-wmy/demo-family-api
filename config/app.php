@@ -229,6 +229,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         'Image' => Intervention\Image\Facades\Image::class,
+        'Clockwork' => Clockwork\Support\Laravel\Facade::class,
     ],
 
     'customer_service' => env('CUSTOMER_SERVICE', ''),
