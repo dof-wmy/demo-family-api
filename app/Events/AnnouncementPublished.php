@@ -10,7 +10,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class AnnouncementPublished
+class AnnouncementPublished implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -32,6 +32,6 @@ class AnnouncementPublished
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('channel-name');
+        return new Channel('admin');
     }
 }
