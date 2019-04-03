@@ -125,7 +125,8 @@ class Wechat extends Command
         do{
             $appTypes = [
                 'official_account',
-                'mini_program',
+                // 'mini_program',
+                // 'open_platform',
             ];
             while(!in_array($appType, $appTypes)){
                 $appType = $this->choice('请选择微信账户类型', $appTypes, 0);
