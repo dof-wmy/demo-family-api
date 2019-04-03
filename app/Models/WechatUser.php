@@ -84,8 +84,8 @@ class WechatUser extends Base
             ]);
             $wechatUser->detail = array_merge($wechatUser->detail, $wechatUserDetail);
             $wechatUser->save();
-            if(!empty($wechatUserDetail['unionid'])){
-                $wechatUser->unionid = $wechatUserDetail['unionid'];
+            if(!empty($wechatUser->detail['unionid'])){
+                $wechatUser->unionid = $wechatUser->detail['unionid'];
             }
             return $wechatUser;
         }else{
