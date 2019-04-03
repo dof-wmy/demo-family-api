@@ -65,7 +65,7 @@ class AuthController extends ApiController
                 if(empty($request->code)){
                     return $this->response->errorUnauthorized('code不能为空');
                 }
-                $wechatUser = WechatUser::firstByRequest($request);
+                $wechatUser = WechatUser::firstByRequest($request, $request->header('App-Type'));
             }
             if(!blank($wechatUser)){
                 $user = $wechatUser->getUser();
