@@ -79,10 +79,11 @@ class WechatUser extends Base
                 'app_id'    => $wechatApp->config->app_id,
                 'app_type'  => $wechatAppType,
             ], [
-                'detail'      => $wechatUserDetail,
                 'nickname'    => array_get($wechatUserDetail, 'nickname', null),
                 'headimgurl'  => array_get($wechatUserDetail, 'headimgurl', null),
             ]);
+            $wechatUser->detail = array_merge($wechatUser->detail, $wechatUserDetail);
+            $wechatUser->save();
             if(!empty($wechatUserDetail['unionid'])){
                 $wechatUser->unionid = $wechatUserDetail['unionid'];
             }
