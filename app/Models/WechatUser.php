@@ -49,27 +49,24 @@ class WechatUser extends Base
         $wechatApp = app("wechat.{$wechatAppType}");
         if($wechatAppType == 'official_account'){
             $wechatOauthUser = $wechatApp->oauth->setRequest($request)->user();
-            $wechatUserDetail = [
+            $wechatUserDetail = $wechatOauthUser->getOriginal();
+            $wechatUserDetail = array_merge($wechatUserDetail, [
                 'openid'      => $wechatOauthUser->getId(),
                 'nickname'    => $wechatOauthUser->getNickname(),
                 'headimgurl'  => $wechatOauthUser->getAvatar(),
-            ];
+            ]);
             if(!empty($wechatOauthUser['unionid'])){
                 $wechatUserDetail['unionid'] = $wechatOauthUser['unionid'];
             }
         }elseif($wechatAppType == 'mini_program'){
             $wechatAuthSession = $wechatApp->auth->session($request->code);
             if(!empty($wechatAuthSession['openid'])){
-                $wechatUserDetail = [
-                    'openid'      => $wechatAuthSession['openid'],
-                    'session_key' => $wechatAuthSession['session_key'],
-                ];
-                if(!empty($wechatAuthSession['unionid'])){
-                    $wechatUserDetail['unionid'] = $wechatAuthSession['unionid'];
-                }
+                $wechatUserDetail = $wechatAuthSession;
             }else{
                 // TODO 小程序登录失败
             }
+        }elseif($wechatAppType == 'open_platform'){
+            // 
         }else{
             // 
         }
