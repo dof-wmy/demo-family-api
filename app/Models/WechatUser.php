@@ -86,6 +86,7 @@ class WechatUser extends Base
             $wechatUser->save();
             if(!empty($wechatUser->detail['unionid'])){
                 $wechatUser->unionid = $wechatUser->detail['unionid'];
+                $wechatUser->save();
             }
             return $wechatUser;
         }else{
