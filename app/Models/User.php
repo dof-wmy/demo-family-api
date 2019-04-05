@@ -22,6 +22,8 @@ class User extends Authenticatable implements JWTSubject
 
     protected $guard_name = 'user';
 
+    const DEFAULT_DISTANCE = 999999999;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -84,6 +86,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function getDistanceAttribute($distance){
+        $distance = ($distance == self::DEFAULT_DISTANCE) ? null : $distance;
         return empty($distance) ? '' : round(($distance/1000), 2);
     }
 
@@ -234,6 +237,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     static function getDistanceFieldSql($longitude = null, $latitude = null){
-        return $longitude && $latitude ? DB::raw("ST_Distance_Sphere(point(users.longitude, users.latitude), point({$longitude}, {$latitude})) AS distance") : DB::raw('0 AS distance');
+        $defaultDistance = self::DEFAULT_DISTANCE;
+        return $longitude && $latitude ? DB::raw("COALESCE(ST_Distance_Sphere(point(users.longitude, users.latitude), point({$longitude}, {$latitude})), {$defaultDistance}) AS distance") : DB::raw('0 AS distance');
     }
 }
