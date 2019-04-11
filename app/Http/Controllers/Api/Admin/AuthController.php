@@ -54,10 +54,10 @@ class AuthController extends AdminController
     public function me()
     {
         $user = auth($this->guard_name)->user();
-        $can = [];
+        $permissions = [];
         foreach(__('permission.admin_user') as $permission=>$permissionText){
             if($user->can($permission)){
-                $can[$permission] = true;
+                $permissions[$permission] = true;
             }
         }
         return $this->response->array(array_merge(
@@ -65,7 +65,7 @@ class AuthController extends AdminController
                 'username',
                 'name',
             ]), [
-            'can' => $can,
+            'permissions' => $permissions,
         ]));
     }
 
@@ -119,7 +119,8 @@ class AuthController extends AdminController
         return $this->response->array([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth($this->guard_name)->factory()->getTTL() * 60
+            'expires_in' => auth($this->guard_name)->factory()->getTTL() * 60,
+            'success_message' => '登录成功',
         ]);
     }
 }
