@@ -125,4 +125,75 @@ class AdminUser extends Authenticatable implements JWTSubject
         });
     }
 
+    public function getPermissions(){
+        $permissions = [];
+        foreach(__('permission.admin_user') as $permission=>$permissionText){
+            if($this->can($permission)){
+                $permissions[$permission] = true;
+            }
+        }
+        return $permissions;
+    }
+
+    public function getMenuData($permissions = []){
+        if(empty($permissions)){
+            $permissions = $this->getPermissions();
+        }
+        $permissions = array_keys($permissions);
+        $menuData = [
+            [
+              'path' => '/index',
+              'name' => '首页',
+              'icon' => 'home',
+            ],
+            [
+                'path' => '/admin',
+                'name' => '后台',
+                'icon' => 'tool',
+                'children' => [
+                    [
+                        'path' => '/admin/user',
+                        'name' => '管理员',
+                        'icon' => 'user',
+                        'permissions' => [        
+                            'get_admin_user',
+                            'post_admin_user',
+                            'delete_admin_user',
+                        ],
+                    ],
+                    [
+                        'path' => '/admin/group',
+                        'name' => '管理组',
+                        'icon' => 'team',
+                        'permissions' => [        
+                            'get_admin_group',
+                            'post_permission_of_admin_group',
+                            'delete_permission_of_admin_group',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+        $menuData = $this->menuFilter($menuData, $permissions);
+        return $menuData;
+    }
+
+    public function menuFilter(&$menu, $permissions){
+        foreach($menu as $menuItemKey=>$menuItem){
+            if(!empty($menuItem['permissions']) && empty(array_intersect($permissions, $menuItem['permissions']))){
+                unset($menu[$menuItemKey]);
+            }elseif(!empty($menuItem['children'])){
+                $menu[$menuItemKey]['children'] = $this->menuFilter($menu[$menuItemKey]['children'], $permissions);
+            }else{
+                // 
+            }
+        }
+
+        foreach($menu as $menuItemKey=>$menuItem){
+            if(isset($menuItem['children']) && empty($menuItem['children'])){
+                unset($menu[$menuItemKey]);
+            }
+        }
+        return $menu;
+    }
 }

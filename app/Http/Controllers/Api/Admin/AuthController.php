@@ -54,19 +54,17 @@ class AuthController extends AdminController
     public function me()
     {
         $user = auth($this->guard_name)->user();
-        $permissions = [];
-        foreach(__('permission.admin_user') as $permission=>$permissionText){
-            if($user->can($permission)){
-                $permissions[$permission] = true;
-            }
-        }
+        $permissions = $user->getPermissions();
         return $this->response->array(array_merge(
             $user->only([
                 'username',
                 'name',
             ]), [
-            'permissions' => $permissions,
-        ]));
+                'roles' => $user->roles()->pluck('name'),
+                'permissions' => $permissions,
+                'menuData' => $user->getMenuData($permissions),
+            ]
+        ));
     }
 
     /**
