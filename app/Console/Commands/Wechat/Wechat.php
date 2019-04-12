@@ -92,18 +92,21 @@ class Wechat extends Command
                 $nextOpenId = null;
                 $this->error(json_encode($usersList));
             }
+            $this->info("关注该公众账号的总用户数 {$usersList['total']}，本次拉取数量 {$usersList['count']}，剩余数量 {$remainCount}");
         }while(
             $nextOpenId
             && ($remainCount > 0)
-            && $this->confirm("关注该公众账号的总用户数 {$usersList['total']}，本次拉取数量 {$usersList['count']}，剩余数量 {$remainCount}，继续拉取吗？")
+            // && $this->confirm("继续拉取吗？")
         );
         $this->info("获取用户列表结束 ...");
     }
 
     protected function userInfoList($do){
         $this->info("获取用户信息列表 ...");
-        $openids = []; // TODO openids来源
-        $openids = collect($openids);
+        $openids = \App\Models\WechatUser::where([
+            'app_type' => $this->wechatApp->app_type,
+            'app_id'   => $this->wechatApp->app_id,
+        ])->pluck('openid');
         $openidsCount = $openids->count();
         $chunkSize = 100;
         $chunkPage = ceil($openidsCount/$chunkSize);
