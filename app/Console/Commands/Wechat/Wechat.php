@@ -7,6 +7,9 @@ use Illuminate\Console\Command;
 use App\Events\Wechat\UserList;
 use App\Events\Wechat\UserInfoList;
 
+use App\Models\WechatUser;
+use App\Models\WechatMenu;
+
 class Wechat extends Command
 {
     /**
@@ -46,6 +49,7 @@ class Wechat extends Command
         $module = $this->argument('module');
         $modules = [
             'user',
+            'menu',
         ];
         do{
             while(!in_array($module, $modules)){
@@ -53,7 +57,8 @@ class Wechat extends Command
             }
             $moduleMethodName = "{$module}Module";
             $this->$moduleMethodName();
-        }while($this->confirm("继续操作此账户的其他模块吗？") && !($module = ''));
+            // TODO 继续操作此账户的其他模块（do 参数被复用）
+        }while( false && $this->confirm("继续操作此账户的其他模块吗？") && !($module = ''));
     }
 
     protected function userModule(){
@@ -103,7 +108,7 @@ class Wechat extends Command
 
     protected function userInfoList($do){
         $this->info("获取用户信息列表 ...");
-        $openids = \App\Models\WechatUser::where([
+        $openids = WechatUser::where([
             'app_type' => $this->wechatApp->app_type,
             'app_id'   => $this->wechatApp->app_id,
         ])->pluck('openid');
@@ -122,6 +127,72 @@ class Wechat extends Command
             }
         }
         $this->info("获取用户信息列表结束 ...");
+    }
+
+    protected function menuModule(){
+        $this->info("微信自定义菜单管理 ...");
+        $do = $this->argument('do');
+        $doList = [
+            'get',
+            'create',
+            'delete',
+        ];
+        while(!in_array($do, $doList)){
+            $do = $this->choice('请选择要执行的操作', $doList, 0);
+        }
+        $doMethod = 'menu' . ucfirst($do);
+        $this->$doMethod($do);
+    }
+
+    protected function menuGet(){
+        foreach([
+            'list',// 读取（查询）已设置菜单
+            'current',// 获取当前菜单
+        ] as $type){
+            $data = $this->wechatApp->menu->$type();
+            $wechatMenu = new WechatMenu();
+            $wechatMenu->app_id = $this->wechatApp->config->app_id;
+            $wechatMenu->app_type = $this->wechatApp->config->app_type;
+            $wechatMenu->type = $type;
+            $wechatMenu->data = $data;
+            $wechatMenu->save();
+            $this->info(json_encode($wechatMenu->toArray()));
+        }
+    }
+
+    protected function menuCreate(){
+        // TODO 个性化菜单条件
+        $matchRule = [
+            // "tag_id" => "2",
+            // "sex" => "1",
+            // "country" => "中国",
+            // "province" => "广东",
+            // "city" => "广州",
+            // "client_platform_type" => "2",
+            // "language" => "zh_CN"
+        ];
+
+        $wechatMenu = WechatMenu::where([
+                'type' => 'list',
+            ])
+            ->whereJsonLength('data->menu', '>', 0)
+            ->orderBy('id', 'desc')->first();
+        $buttons = array_get($wechatMenu->data, 'menu.button', []);
+        $menuCreateResult = $this->wechatApp->menu->create($buttons, $matchRule);
+        $this->info(json_encode($menuCreateResult));
+    }
+
+    public function menuDelete(){
+        $menuId = null; // TODO 删除个性化菜单时用，ID 从查询接口获取，默认删除全部
+        if($this->confirm("确定要删除自定义菜单吗？")){
+            $this->wechatApp->menu->delete($menuId); 
+        }
+    }
+
+    public function menuTest($userId){
+        // $userId 可以是粉丝的 OpenID，也可以是粉丝的微信号。
+        // 测试个性化菜单
+        $this->wechatApp->menu->match($userId);
     }
 
     protected function wechatApp($appType = '', $appAccount = ''){
