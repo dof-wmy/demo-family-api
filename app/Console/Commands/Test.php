@@ -52,7 +52,7 @@ class Test extends Command
     }
 
     private function pluralModule(){
-        $params = $this->arguments('params');
+        $params = $this->option('params');
         $str = array_get($params, 0);
         while(empty($str)){
             $str = $this->ask('请输入单词（仅支持英文）');
