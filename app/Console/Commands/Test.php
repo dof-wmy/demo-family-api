@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
+use Illuminate\Support\Str;
+
 class Test extends Command
 {
     /**
@@ -11,7 +13,7 @@ class Test extends Command
      *
      * @var string
      */
-    protected $signature = 'test';
+    protected $signature = 'test {module?} {--params=* : 附加参数}';
 
     /**
      * The console command description.
@@ -37,11 +39,30 @@ class Test extends Command
      */
     public function handle()
     {
-        $this->test();
+        $module = $this->argument('module');
+        $moduleMethodName = "{$module}Module";
+        if(!method_exists($this, $moduleMethodName)){
+            $reflecObject = new \ReflectionClass($this);
+            $methods = $reflecObject->getMethods();
+            $moduleMethodName = $this->choice('请选择要执行的模块', collect($methods)->filter(function($methodItem){
+                return ends_with($methodItem->name, 'Module');
+            })->pluck('name')->toArray());
+        }
+        $this->$moduleMethodName();
     }
 
-    private function test(){
-        $this->info('test');
+    private function pluralModule(){
+        $params = $this->arguments('params');
+        $str = array_get($params, 0);
+        while(empty($str)){
+            $str = $this->ask('请输入单词（仅支持英文）');
+        }
+        foreach([
+            '1' => '单',
+            '2' => '复',
+        ] as $k => $v){
+            $this->info("{$str} 的{$v}数形式：" . Str::plural($str, $k));
+        }
     }
 
 }
