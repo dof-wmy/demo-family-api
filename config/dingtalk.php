@@ -8,4 +8,7 @@ return [
     'access_token' => [
         'robot' => env('DINGTALK_ROBOT_ACCESS_TOKEN'),
     ],
+    'ratelimit' => [
+        'robot' => env('DINGTALK_ROBOT_RATELIMIT', 5), // minutes
+    ],
 ];
