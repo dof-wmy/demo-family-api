@@ -65,4 +65,24 @@ class Test extends Command
         }
     }
 
+    private function dingtalkModule(){
+        app('dingtalk_client')->post(config('dingtalk.path.robot'), [
+            'query' => [
+                'access_token' => config('dingtalk.access_token.robot'),
+            ],
+            'json' => [
+                "msgtype" => "text",
+                "text" => [
+                    "content" => "我就是我, 是颜色不一样的烟火",
+                ],
+                "at" => [
+                    'atMobiles' => [
+                        // "130xxxx6752", 
+                    ],
+                    // 'isAtAll' => false,
+                ],
+            ],
+        ]);
+    }
+
 }

@@ -20,6 +20,14 @@ class GuzzleHttpServiceProvider extends ServiceProvider
             return $app;
         });
         $this->app->alias("guzzle_http_client", "http_client");
+
+        $this->app->singleton("guzzle_dingtalk_http_client", function ($laravelApp){
+            $app = new Client([
+                'base_uri' => config('dingtalk.root_url'),
+            ]);
+            return $app;
+        });
+        $this->app->alias("guzzle_dingtalk_http_client", "dingtalk_client");
     }
 
     /**
