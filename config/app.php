@@ -177,6 +177,7 @@ return [
 
         Overtrue\LaravelLang\TranslationServiceProvider::class,
         App\Providers\AliyunServiceProvider::class,
+        App\Providers\GuzzleHttpServiceProvider::class,
     ],
 
     /*
