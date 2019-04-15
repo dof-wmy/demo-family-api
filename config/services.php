@@ -44,4 +44,40 @@ return [
         ],
     ],
 
+    'github' => [
+        'client_id' => env('GITHUB_CLIENT_ID'),
+        'client_secret' => env('GITHUB_CLIENT_SECRET'),
+        'redirect' => '/auth/login/socialite/github/callback',
+    ],
+
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => '/auth/login/socialite/google/callback',
+    ],
+
+    'weibo' => [
+        'client_id' => env('WEIBO_KEY'),
+        'client_secret' => env('WEIBO_SECRET'),
+        'redirect' => '/auth/login/socialite/weibo/callback',
+    ],
+
+    'weixin' => [
+        'client_id' => env('WEIXIN_KEY'),
+        'client_secret' => env('WEIXIN_SECRET'),
+        'redirect' => '/auth/login/socialite/weixin/callback',
+    ],
+
+    'weixinweb' => [
+        'client_id' => env('WEIXINWEB_KEY'),
+        'client_secret' => env('WEIXINWEB_SECRET'),
+        'redirect' => '/auth/login/socialite/weixinweb/callback',
+    ],
+
+    'qq' => [
+        'client_id' => env('QQ_KEY'),
+        'client_secret' => env('QQ_SECRET'),
+        'redirect' => '/auth/login/socialite/qq/callback',
+    ],
+
 ];

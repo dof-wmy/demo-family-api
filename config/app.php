@@ -178,6 +178,8 @@ return [
         Overtrue\LaravelLang\TranslationServiceProvider::class,
         App\Providers\AliyunServiceProvider::class,
         App\Providers\GuzzleHttpServiceProvider::class,
+        // Laravel\Socialite\SocialiteServiceProvider::class,
+        \SocialiteProviders\Manager\ServiceProvider::class,
     ],
 
     /*

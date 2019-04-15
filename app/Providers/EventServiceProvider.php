@@ -22,6 +22,18 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\AnnouncementPublished' => [
             'App\Listeners\UserNotice',
         ],
+
+        \SocialiteProviders\Manager\SocialiteWasCalled::class => [
+            'SocialiteProviders\\Weibo\\WeiboExtendSocialite@handle',
+            'SocialiteProviders\\Weixin\\WeixinExtendSocialite@handle',
+            'SocialiteProviders\\WeixinWeb\\WeixinWebExtendSocialite@handle',
+            'SocialiteProviders\\QQ\\QqExtendSocialite@handle',
+        ],
+
+        \App\Events\SocialiteLoginSuccess::class => [
+            'App\Listeners\SocialiteLogin',
+        ],
+
     ];
     /**
      * 需要注册的订阅者类。
