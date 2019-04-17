@@ -50,6 +50,9 @@ class LoginController extends Controller
     public function socialiteRedirectToProvider($driver, Request $request)
     {
         $with = [];
+        if($request->state){
+            $with['state'] = $request->state;
+        }
         return Socialite::driver($driver)
             ->with($with)
             // ->scopes(['read:user', 'public_repo']) // 将所有现有范围与提供的范围合并
@@ -64,15 +67,20 @@ class LoginController extends Controller
      */
     public function socialiteHandleProviderCallback($driver, Request $request)
     {
-        // TODO 无状态条件判断
-        $stateless = true;
+        $state = decrypt($request->state);
+        $stateless = array_get($state, 'stateless', true);
         if($stateless){
             $user = Socialite::driver($driver)->stateless()->user();
         }else{
             $user = Socialite::driver($driver)->user();
         }
-        $socialiteUser = SocialiteUser::getSocialiteUser($driver, $user);
-        event(new \App\Events\SocialiteLoginSuccess($socialiteUser, $stateless));
+        $socialiteUser = SocialiteUser::getSocialiteUser($driver, $user, $state);
+        if($stateless){
+            return "<script>window.close();</script>";
+        }else{
+            // TODO
+            dd($socialiteUser);
+        }
     }
 
 }

@@ -48,6 +48,7 @@ $api->version('v1', [
         'prefix' => 'admin',
         'namespace' => 'Admin',
     ], function ($api) {
+        $api->get('config', 'AdminController@getConfig');
         $api->group([
             'prefix' => 'auth',
         ], function ($api) {

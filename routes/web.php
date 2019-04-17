@@ -18,7 +18,7 @@ Route::get('/', function () {
 
 // Auth::routes();
 
-Route::get('auth/login/socialite/{driver}', 'Auth\LoginController@socialiteRedirectToProvider');
+Route::get('auth/login/socialite/{driver}', 'Auth\LoginController@socialiteRedirectToProvider')->name('socialite.url');
 Route::get('auth/login/socialite/{driver}/callback', 'Auth\LoginController@socialiteHandleProviderCallback');
 
 // Route::get('/home', 'HomeController@index')->name('home');

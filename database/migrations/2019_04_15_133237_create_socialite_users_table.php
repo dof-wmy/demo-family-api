@@ -17,8 +17,6 @@ class CreateSocialiteUsersTable extends Migration
             $table->bigIncrements('id');
             $table->string('driver')->index();
             $table->bigInteger('socialite_id')->index();
-            $table->bigInteger('user_id')->index()->nullable();
-            $table->string('user_type')->index()->nullable();
             $table->string('token')->nullable();
             $table->string('refresh_token')->nullable();
             $table->string('expires_in')->nullable();

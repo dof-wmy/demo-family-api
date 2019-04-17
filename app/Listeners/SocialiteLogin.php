@@ -26,10 +26,6 @@ class SocialiteLogin
      */
     public function handle(SocialiteLoginSuccess $event)
     {
-        // TODO SocialiteLogin
-        // dd([
-        //     $event->socialiteUser,
-        //     $event->stateless,
-        // ]);
+        //
     }
 }

@@ -10,21 +10,25 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class SocialiteLoginSuccess
+use Cache;
+
+class SocialiteLoginSuccess implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $socialiteUser;
-    public $stateless;
+    private $socialiteUser;
+    private $state;
+    public $code;
+    public $users;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($socialiteUser, $stateless)
+    public function __construct($socialiteUser, $state)
     {
         $this->socialiteUser = $socialiteUser;
-        $this->stateless = $stateless;
+        $this->state = $state;
     }
 
     /**
@@ -34,6 +38,36 @@ class SocialiteLoginSuccess
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('channel-name');
+        $socialitableRelation = array_get($this->state, 'socialitableRelation');
+        $socialitableId = array_get($this->state, 'socialitableId');
+        $socialiteUserReflector = new \ReflectionObject($this->socialiteUser); 
+        if($socialitableRelation && $socialiteUserReflector->hasMethod($socialitableRelation)){
+            if($socialitableId){
+                $socialitableRelationUser = $this->socialiteUser->$socialitableRelation()->where([
+                    'socialitable_id' => $socialitableId,
+                ])->first();
+                if($socialitableRelationUser){
+                    $channelName = $socialitableRelationUser->pusherChannelName();
+                    return new Channel($channelName);
+                }
+            }
+            $users = $this->socialiteUser->$socialitableRelation()->get();
+            $this->users = $users->map(function($user){
+                return $user->only([
+                    'id',
+                    'username',
+                    'name',
+                ]);
+            });
+            $encryptedData = encrypt([
+                'users' => $users,
+            ]);
+            $this->code = 'socialite-' . md5($encryptedData);
+            Cache::remember($this->code, 120, function() use($encryptedData){
+                return $encryptedData;
+            });
+        }
+        return new Channel(array_get($this->state, 'pusherChannelName', time()));
+        // return new PrivateChannel(array_get($this->state, 'pusherChannelName', time()));
     }
 }

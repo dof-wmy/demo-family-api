@@ -13,7 +13,12 @@ class SocialiteUser extends Base
         $this->attributes['detail'] = json_encode($value);
     }
 
-    static function getSocialiteUser($driver, $user){
+    public function adminUsers()
+    {
+        return $this->morphedByMany('App\Models\AdminUser', 'socialitable');
+    }
+
+    static function getSocialiteUser($driver, $user, $state = []){
         $socialiteUser = self::where([
             'driver'        => $driver,
             'socialite_id'  => $user->getId(),
@@ -29,6 +34,41 @@ class SocialiteUser extends Base
         $socialiteUser->avatar = $user->getAvatar();
         $socialiteUser->detail = json_encode($user);
         $socialiteUser->save();
+
+        $socialitableId = array_get($state, 'socialitableId');
+        if($socialitableId){
+            $socialitableRelation = array_get($state, 'socialitableRelation');
+            try{
+                if($socialiteUser->$socialitableRelation()->where('socialitable_id', $socialitableId)->first()){
+                    $socialiteUser->$socialitableRelation()->updateExistingPivot($socialitableId, [
+                        'updated_at' => now(),
+                    ]);
+                }else{
+                    $socialiteUser->$socialitableRelation()->attach($socialitableId, [
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }catch(\Exception $e){
+                // TODO 暂时只记录普通错误日志
+                logger()->error((string) $e);
+                return $socialiteUser;
+            }
+        }
+        event(new \App\Events\SocialiteLoginSuccess($socialiteUser, $state));
         return $socialiteUser;
     }
+
+    static function getSocialites(){
+        return [
+            'github' => [
+                'name'   => 'Github', 
+                'icon'   => 'github',
+                'logo'   => url('/images/brands/github-fill.png'),
+                'url'    => 'https://www.github.com',
+                'description' => '全球最大开源社区网站',
+            ],
+        ];
+    }
+
 }

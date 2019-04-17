@@ -49,6 +49,10 @@ class AdminUser extends Authenticatable implements JWTSubject
         $this->attributes['password'] = bcrypt(trim($value));
     }
 
+    public function socialiteUsers(){
+        return $this->morphToMany('App\Models\SocialiteUser', 'socialitable');
+    }
+
     // Rest omitted for brevity
 
     /**
@@ -195,5 +199,35 @@ class AdminUser extends Authenticatable implements JWTSubject
             }
         }
         return $menu;
+    }
+
+    public function allSocialiteUsers($stateless = true){
+        $allSocialiteUsers = [];
+        $socialiteUsers = $this->socialiteUsers()->get();
+        foreach(SocialiteUser::getSocialites() as $socialiteDriver=>$socialiteDriverConfig){
+            $allSocialiteUsers[] = array_merge($socialiteDriverConfig, [
+                'driver' => $socialiteDriver,
+                'socialiteUsers' => $socialiteUsers->where('driver', $socialiteDriver)->map(function($socialiteUser){
+                    $socialiteUser->detail = json_decode($socialiteUser->detail);
+                    if($socialiteUser->driver == 'github'){
+                        $socialiteUser->url = $socialiteUser->detail['user']['html_url'];
+                    }
+                    return $socialiteUser;
+                })->all(),
+                'oauthUrl'    => route('socialite.url', [
+                    'driver' => $socialiteDriver,
+                    'state'  => encrypt([
+                        'socialitableId' => $this->id,
+                        'socialitableRelation' => 'adminUsers',
+                        'stateless' => $stateless,
+                    ]),
+                ]),
+            ]);
+        }
+        return $allSocialiteUsers;
+    }
+
+    public function pusherChannelName(){
+        return "socialite-adminUser-" . md5($this->id . $this->username .$this->password);
     }
 }

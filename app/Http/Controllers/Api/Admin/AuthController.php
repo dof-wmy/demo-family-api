@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Requests\Admin\PostUpdateMeRequest;
 
+use Cache;
 class AuthController extends AdminController
 {
     /**
@@ -37,13 +38,38 @@ class AuthController extends AdminController
      */
     public function login()
     {
-        $credentials = request(['username', 'password']);
-
-        if (! $token = auth($this->guard_name)->attempt($credentials)) {
-            return $this->response->errorUnauthorized();
+        $request = request();
+        if($request->type == "account"){
+            $credentials = request(['username', 'password']);
+            if (! $token = auth($this->guard_name)->attempt($credentials)) {
+                return $this->response->errorUnauthorized();
+            }
+            return $this->respondWithToken($token);
+        }elseif($request->type == "socialite"){
+            if(empty($request->code)){
+                return $this->response->errorUnauthorized('登录失败：code');
+            }
+            if(empty($request->user)){
+                return $this->response->errorUnauthorized('登录失败：user');
+            }
+            $encryptedData = Cache::get($request->code);
+            if(empty($encryptedData)){
+                return $this->response->errorUnauthorized('登录失败：encryptedData');
+            }
+            $decryptedData = decrypt($encryptedData);
+            if(empty($decryptedData)){
+                return $this->response->errorUnauthorized('登录失败：decryptedData');
+            }
+            foreach($decryptedData['users'] as $user){
+                if($user['id'] == $request->user['id']){
+                    Cache::forget($request->code);
+                    return $this->respondWithToken(auth($this->guard_name)->login($user));
+                }
+            }
+            return $this->response->errorUnauthorized('登录失败');
+        }else{
+            return $this->response->errorUnauthorized('登录方式异常');
         }
-
-        return $this->respondWithToken($token);
     }
 
     /**
@@ -51,7 +77,7 @@ class AuthController extends AdminController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function me()
+    public function me($data = [])
     {
         $user = auth($this->guard_name)->user();
         $permissions = $user->getPermissions();
@@ -63,7 +89,10 @@ class AuthController extends AdminController
                 'roles' => $user->roles()->pluck('name'),
                 'permissions' => $permissions,
                 'menuData' => $user->getMenuData($permissions),
-            ]
+                'socialiteUsers' => $user->allSocialiteUsers(),
+                'pusherChannelName' => $user->pusherChannelName(),
+            ],
+            $data,
         ));
     }
 
@@ -102,6 +131,10 @@ class AuthController extends AdminController
             }
         }
         $user->save();
+        if($request->socialiteUsers){
+            $user->socialiteUsers()->detach($request->socialiteUsers['detach']);
+            return $this->me();
+        }
         return $this->successMessage('更新成功');
     }
 
