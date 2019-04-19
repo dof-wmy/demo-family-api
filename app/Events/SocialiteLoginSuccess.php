@@ -51,7 +51,7 @@ class SocialiteLoginSuccess implements ShouldBroadcast
                     return new Channel($channelName);
                 }
             }
-            $users = $this->socialiteUser->$socialitableRelation()->get();
+            $users = $this->socialiteUser->$socialitableRelation()->orderBy('id', 'desc')->get();
             $this->users = $users->map(function($user){
                 return $user->only([
                     'id',
