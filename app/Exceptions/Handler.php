@@ -24,6 +24,10 @@ class Handler extends ExceptionHandler
         //     'exception' => HttpException::class,
         //     'robot'     => 'robot',
         // ],
+        [
+            'exception' => \Exception::class,
+            'robot'     => 'robot',
+        ],
     ];
 
     /**
@@ -51,7 +55,12 @@ class Handler extends ExceptionHandler
                 // TODO 不同异常对应不同的消息类型
                 DingtalkRobot::dispatch([
                     'robot' => $robot,
-                    "content" => (string) $exception,
+                    "content" => implode("\n\n", [
+                        "异常时间：" . now()->format('Y-m-d H:i:s'),
+                        "Request：" . (string) request(),
+                        "异常内容：" . (string) $exception,
+                        "异常时间：" . now()->format('Y-m-d H:i:s'),
+                    ]),
                 ])->onQueue('dingtalk');
             }
         }

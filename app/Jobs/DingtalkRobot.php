@@ -46,9 +46,9 @@ class DingtalkRobot implements ShouldQueue
         if($jsonData['msgtype'] == 'text'){
             $jsonData['text'] = [
                 "content" => implode("\n\n", [
-                    now()->format('Y-m-d H:i:s'),
+                    "通知时间：" . now()->format('Y-m-d H:i:s'),
                     array_get($this->data, 'content', '出错了！！！'),
-                    now()->format('Y-m-d H:i:s'),
+                    "通知时间：" . now()->format('Y-m-d H:i:s'),
                 ]),
             ];
         }else{

@@ -68,6 +68,7 @@ class Test extends Command
     }
 
     private function dingtalkModule(){
+        // abort(500);
         DingtalkRobot::dispatch([
             "content" => "我就是我, 是颜色不一样的烟火",
         ])->onQueue('dingtalk');
