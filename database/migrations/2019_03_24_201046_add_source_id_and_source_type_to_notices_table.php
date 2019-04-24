@@ -14,8 +14,8 @@ class AddSourceIdAndSourceTypeToNoticesTable extends Migration
     public function up()
     {
         Schema::table('notices', function (Blueprint $table) {
-            $table->unsignedBigInteger('source_id')->nullable()->after('user_id');
-            $table->string('source_type')->nullable()->after('source_id');
+            $table->unsignedBigInteger('source_id')->index()->nullable()->after('user_id');
+            $table->string('source_type', 64)->index()->nullable()->after('source_id');
         });
     }
 

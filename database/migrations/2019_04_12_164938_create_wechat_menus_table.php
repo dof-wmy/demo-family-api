@@ -15,8 +15,8 @@ class CreateWechatMenusTable extends Migration
     {
         Schema::create('wechat_menus', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('app_id')->index();
-            $table->string('app_type');
+            $table->string('app_id', 64)->index();
+            $table->string('app_type', 64);
             $table->string('type');
             $table->json('data')->nullable();
             $table->timestamps();
