@@ -15,7 +15,7 @@ class CreateSocialiteUsersTable extends Migration
     {
         Schema::create('socialite_users', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('driver')->index();
+            $table->string('driver', 64)->index();
             $table->bigInteger('socialite_id')->index();
             $table->string('token')->nullable();
             $table->string('refresh_token')->nullable();

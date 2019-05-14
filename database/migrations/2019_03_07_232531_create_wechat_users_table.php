@@ -15,12 +15,12 @@ class CreateWechatUsersTable extends Migration
     {
         Schema::create('wechat_users', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('openid')->index();
-            $table->string('app_id')->index();
-            $table->string('app_type');
+            $table->string('openid', 64)->index();
+            $table->string('app_id', 64)->index();
+            $table->string('app_type', 64);
             $table->unsignedBigInteger('user_id')->index()->nullable();
             $table->json('detail')->nullable();
-            $table->string('nickname')->nullable();
+            $table->string('nickname', 64)->nullable();
             $table->string('headimgurl')->nullable();
             $table->timestamps();
             $table->unique(['openid', 'app_id', 'app_type'], 'unique_openid');
