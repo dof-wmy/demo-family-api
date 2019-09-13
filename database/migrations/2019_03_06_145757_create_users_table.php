@@ -22,8 +22,13 @@ class CreateUsersTable extends Migration
             $table->string('mobile', 16)->unique()->nullable();
             $table->string('password')->nullable();
             $table->string('name', 64)->nullable()->comment('姓名');
+            $table->json('avatar')->nullable();
+            $table->unsignedBigInteger('inviter_id')->nullable();
+            $table->double('longitude')->nullable();
+            $table->double('latitude')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
+            $table->unsignedTinyInteger('blacklist')->nullable();
             $table->timestamps();
             $table->unique(['register_source_id', 'register_source_type'], 'unique_register_source');
         });
