@@ -56,24 +56,24 @@ class AuthController extends ApiController
     }
 
     public function loginByWechat(Request $request){
-        try{
+        try {
             $mockOpenid = $request->mock_openid;
-            if($mockOpenid && in_array($mockOpenid, config('wechat.mock_openids'))){
+            if ($mockOpenid && in_array($mockOpenid, config('wechat.mock_openids'))) {
                 $wechatUser = WechatUser::where('openid', $mockOpenid)->first();
             }
-            if(empty($wechatUser)){
-                if(empty($request->code)){
+            if (empty($wechatUser)) {
+                if (empty($request->code)) {
                     return $this->response->errorUnauthorized('code不能为空');
                 }
                 $wechatUser = WechatUser::firstByRequest($request, $request->header('App-Type'));
             }
-            if(!blank($wechatUser)){
+            if (!blank($wechatUser)) {
                 $user = $wechatUser->getUser();
-                if(empty($user)){
+                if (empty($user)) {
                     $create = true;
-                    if($create){
-                        $user = $wechatUser->createUser();
-                    }else{
+                    if ($create) {
+                        $user = $wechatUser->createUser($request);
+                    } else {
                         // TODO 要求绑定 || 绑定操作
                         return $this->response->errorUnauthorized('敬请期待...');
                     }
@@ -83,7 +83,7 @@ class AuthController extends ApiController
                 $wechatUserDetail = null;
                 $wechatUser->updateFromWechat($force, $wechatUserDetail);
             }
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             $exceptionCode = $e->getCode();
             $exceptionMessage = $e->getMessage();
             $errorLog = implode("\n======", [
@@ -97,9 +97,9 @@ class AuthController extends ApiController
             return $this->response->errorUnauthorized((config('app.debug') ? $errorLog : '登录异常'));
         }
 
-        if(!empty($user)){
+        if (!empty($user)) {
             return $this->respondWithToken(auth($this->guard_name)->login($user));
-        }else{
+        } else {
             return $this->response->errorUnauthorized('登录失败');
         }
     }
@@ -140,7 +140,7 @@ class AuthController extends ApiController
     public function updateMe(Request $request)
     {
         $user = auth($this->guard_name)->user();
-        if($request->has('encryptedData') && $request->has('iv')){
+        if ($request->has('encryptedData') && $request->has('iv')) {
             $wechatUser = WechatUser::where([
                 'user_id'  => $user->id,
                 'app_type' => 'mini_program',
@@ -148,26 +148,28 @@ class AuthController extends ApiController
             ])->first();
             $decryptedData = $wechatUser->wechat_app->encryptor->decryptData($wechatUser->detail['session_key'], $request->iv, $request->encryptedData);
             $wechatUser->updateFromWechat(true, $decryptedData);
-            if(!empty($decryptedData['phoneNumber'])){
+            if (!empty($decryptedData['phoneNumber'])) {
+                if(
+                    User::where([
+                        'mobile' => $decryptedData['phoneNumber'],
+                    ])
+                    ->where('id', '!=', $user->id)
+                    ->first(['id'])
+                ){
+                    return $this->errorMessage("手机号 {$decryptedData['phoneNumber']} 已被占用");
+                }
                 $user->mobile = $decryptedData['phoneNumber'];
             }
         }
-        if($request->avatar){
-            $image = Image::make($request->avatar);
-            $format = 'png';
-            $filePath = implode('/', [
-                'user/avatar',
-                md5($user->id),
-                md5(microtime()) . ".{$format}"
+        if ($request->avatar) {
+            $user->avatar = $this->saveBase64Image($request->avatar, [
+                'sub_path' => [
+                    'user',
+                    'avatar',
+                    md5($user->id),
+                ],
+                'disk'     => 'public',
             ]);
-            $storageDisk = 'public';
-            $storage = Storage::disk($storageDisk);
-            $storage->put($filePath, $image->encode($format));
-            // $image->save($storage->path($filePath));
-            $user->avatar = [
-                'disk' => $storageDisk,
-                'path' => $filePath,
-            ];
         }
         $user->save();
         return $this->me();
