@@ -16,6 +16,8 @@ class CreateNoticesTable extends Migration
         Schema::create('notices', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id')->index();
+            $table->unsignedBigInteger('source_id')->index()->nullable();
+            $table->string('source_type', 64)->index()->nullable();
             $table->string('title');
             $table->text('content');
             $table->timestamp('read_at')->nullable();
