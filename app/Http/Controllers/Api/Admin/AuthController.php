@@ -92,7 +92,7 @@ class AuthController extends AdminController
                 'socialiteUsers' => $user->allSocialiteUsers(),
                 'pusherChannelName' => $user->pusherChannelName(),
             ],
-            $data,
+            $data
         ));
     }
 
