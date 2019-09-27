@@ -42,19 +42,20 @@ class Init extends Command
     {
         $this->info("应用初始化 ===>>\n");
 
-        $this->info('生成加密密钥...');
-        $this->call('key:generate');
+        foreach([
+            'key:generate' => '生成应用程序密钥',
+            'jwt:secret' => '生成 JWT 密钥',
+            'migrate' => '运行数据库迁移',
+            'storage:link' => 'storage:link',
+        ] as $command=>$message){
+            if($this->confirm("是否 {$message} ？")){
+                $this->info("{$message} start");
+                $this->call($command);
+                $this->info("{$message} end");
+            }
+        }
 
-        $this->info('生成 JWT 加密密钥...');
-        $this->call('jwt:secret');
-
-        $this->info('运行数据库迁移...');
-        $this->call('migrate');
-
-        $this->info('文件存储系统link ...');
-        $this->call('storage:link');
-
-        $this->info('后台：新增管理组...');
+        $this->info('后台：新增预设管理组...');
         $adminRoleGuardName = (new AdminUser())->guard_name;
         foreach([
             'super-admin', // 超级管理员
@@ -66,7 +67,7 @@ class Init extends Command
                 'guard' => $adminRoleGuardName,
             ]);
         }
-        $this->info('后台：新增权限...');
+        $this->info('后台：新增预设权限...');
         foreach([
             'get_admin_user',
             'post_admin_user',
@@ -80,17 +81,19 @@ class Init extends Command
                 'guard' => $adminRoleGuardName,
             ]);
         }
-        $this->info('后台：新建管理员...');
-        $this->call('admin_user', [
-            'do' => 'new',
-        ]);
-        $this->info('后台：管理员分配角色...');
-        $this->call('admin_user', [
-            'do' => 'role',
-        ]);
 
-        $this->info('运行数据填充...');
+        // $this->info('后台：新建管理员...');
+        // $this->call('admin_user', [
+        //     'do' => 'new',
+        // ]);
+        // $this->info('后台：管理员分配角色...');
+        // $this->call('admin_user', [
+        //     'do' => 'role',
+        // ]);
+
+        $this->info('运行数据填充 start');
         $this->call('db:seed');
+        $this->info('运行数据填充 end');
         $this->info("\n<<<=== 应用初始化完成");
     }
 }
