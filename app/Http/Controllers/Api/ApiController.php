@@ -65,10 +65,11 @@ class ApiController extends Controller
         });
     }
 
-    public function successMessage($message)
+    public function successMessage($message, $option = [])
     {
         return $this->response->array([
             'success_message' => $message,
+            'duration' => array_get($option, 'duration', 3), // 持续时间 seconds
         ]);
     }
 
@@ -78,14 +79,14 @@ class ApiController extends Controller
             DB::rollback();
         }
 
-        // return $this->response->array([
-        //     'error_message' => $message,
-        // ]);
+        return $this->response->array([
+            'error_message' => $message,
+        ]);
 
-        return $this->response->error(json_encode([
-            'title' => $title,
-            'content' => $message,
-        ], JSON_UNESCAPED_UNICODE), 406);
+        // return $this->response->error(json_encode([
+        //     'title' => $title,
+        //     'content' => $message,
+        // ], JSON_UNESCAPED_UNICODE), 406);
     }
 
     public function paginatorTransformer(LengthAwarePaginator $paginator)

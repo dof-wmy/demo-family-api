@@ -198,7 +198,7 @@ class AdminUser extends Authenticatable implements JWTSubject
                 unset($menu[$menuItemKey]);
             }
         }
-        return $menu;
+        return array_values($menu);
     }
 
     public function allSocialiteUsers($stateless = true){
