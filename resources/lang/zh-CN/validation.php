@@ -125,8 +125,28 @@ return [
     */
 
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'family_id' => [
+            'required' => '请选择家族',
+            'exists' => '选择的家族不存在',
+        ],
+        'name' => [
+            'required' => '姓名不能为空',
+            'unique' => '姓名在家族中已存在',
+        ],
+        'sex' => [
+            'required' => '请选择性别',
+            'in' => '选择的性别无效',
+        ],
+        'birthday' => [
+            'required' => '请选择生日',
+            'date' => '生日无效',
+        ],
+        'father_id' => [
+            'required' => '请选择父亲',
+            'exists' => '选择的父亲无效',
+        ],
+        'mother_id' => [
+            'exists' => '选择的母亲无效',
         ],
     ],
 

@@ -177,6 +177,18 @@ class AdminUser extends Authenticatable implements JWTSubject
                     ],
                 ],
             ],
+            [
+                'path' => '/family',
+                'name' => '家谱',
+                'icon' => 'user',
+                'children' => [
+                    [
+                        'path' => '/family/members',
+                        'name' => '成员',
+                        'icon' => 'user',
+                    ],
+                ],
+            ],
         ];
         $menuData = $this->menuFilter($menuData, $permissions);
         return $menuData;

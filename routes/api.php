@@ -71,5 +71,12 @@ $api->version('v1', [
         $api->get('feedback', 'FeedbackController@index');
         $api->get('announcements', 'AnnouncementController@index');
         $api->post('announcements', 'AnnouncementController@store');
+
+        // 家谱管理
+        $api->get('family_members', 'FamilyMemberController@index');
+        $api->post('family_members', 'FamilyMemberController@store');
+        $api->post('family_members/{id}', 'FamilyMemberController@update');
+        $api->delete('family_members', 'FamilyMemberController@delete');
+        $api->post('family_members_relation', 'FamilyMemberController@getMembersRelation');
     });
 });
